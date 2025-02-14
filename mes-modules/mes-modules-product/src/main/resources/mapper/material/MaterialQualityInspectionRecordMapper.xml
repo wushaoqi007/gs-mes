@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.material.infrastructure.mapper.MaterialQualityInspectionRecordMapper">
+
+
+    <select id="selectReworkStatistics" parameterType="MaterialComplainStatisticsReq"
+            resultType="MaterialReworkStatisticsResp">
+        SELECT
+        a.provider provider,
+        a.totalNum totalNum,
+        IFNULL(ROUND((IFNULL(a.totalNgNum,0) + IFNULL(b.totalComplaintNum,0))/IFNULL(a.totalNum,0)*100),0)  reworkRate
+        FROM
+        (
+        SELECT
+        provider,
+        SUM( number ) AS totalNum,
+        SUM( ng_number ) AS totalNgNum
+        FROM
+        material_quality_inspection_record
+        WHERE DATE_FORMAT( create_time, '%Y-%m' )= #{date}
+        AND provider IS NOT NULL
+        GROUP BY
+        provider
+        ) a
+        LEFT JOIN ( SELECT provider, SUM( number ) AS totalComplaintNum FROM material_complaint_record
+        WHERE provider IS NOT NULL and `status`=1
+        AND quality_id IN ( SELECT id FROM material_quality_inspection_record WHERE DATE_FORMAT( create_time, '%Y-%m' )= #{date} )
+        GROUP BY provider ) b ON a.provider = b.provider
+    </select>
+
+    <select id="selectComplaintStatistics" parameterType="MaterialComplainStatisticsReq"
+            resultType="MaterialComplaintStatisticsResp">
+        SELECT problem_type problemType,
+               IFNULL(ROUND( SUM( number )/( SELECT SUM( number ) FROM material_quality_inspection_record
+        WHERE DATE_FORMAT( create_time, '%Y-%m' )= #{date} ), 2),0) complaintRate
+        FROM
+            material_complaint_record
+        WHERE `status` = 1
+        AND quality_id IN ( SELECT id FROM material_quality_inspection_record WHERE DATE_FORMAT( create_time, '%Y-%m' )= #{date} )
+        GROUP BY
+            problem_type
+    </select>
+
+    <select id="selectHourStatistics" parameterType="MaterialQualityStatisticsReq"  resultType="MaterialQualityHourStatisticsResp">
+        select a.hour hour, SUM(a.number) num
+        from (SELECT *, DATE_FORMAT(create_time, '%H') hour
+              FROM `material_quality_inspection_record`
+              where TO_DAYS(create_time) = TO_DAYS(#{date})) a
+        group by a.hour order by hour asc
+    </select>
+
+</mapper>

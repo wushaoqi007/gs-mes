@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.material.infrastructure.mapper.MaterialStockRecordDetailMapper">
+
+    <resultMap type="MaterialStockRecordDetail" id="MaterialStockRecordDetailResult">
+        <result property="id"    column="id"    />
+        <result property="recordId"    column="record_id"    />
+        <result property="warehouseId"    column="warehouse_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="operation"    column="operation"    />
+        <result property="number"    column="number"    />
+        <result property="numberAfterOperation"    column="number_after_operation"    />
+        <result property="sponsor"    column="sponsor"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+    </resultMap>
+
+    <select id="listStockRecordDetail" parameterType="Long" resultType="MaterialInfoResp">
+        SELECT
+            m.id,
+            m.`code` CODE,
+            m.`name` NAME,
+            m.version,
+            m.type,
+            m.unit,
+            rd.number
+        FROM
+            material_stock_record_detail rd
+            LEFT JOIN base_material m ON rd.material_id = m.id
+        WHERE
+            rd.record_id = #{recordId}
+    </select>
+
+    <sql id="selectMaterialStockRecordDetailVo">
+        select id, record_id, warehouse_id, material_id, operation, number, number_after_operation, sponsor, create_time, create_by from material_stock_record_detail
+    </sql>
+
+    <select id="selectMaterialStockRecordDetailList" parameterType="MaterialStockRecordDetail" resultMap="MaterialStockRecordDetailResult">
+        <include refid="selectMaterialStockRecordDetailVo"/>
+        <where>
+            <if test="recordId != null "> and record_id = #{recordId}</if>
+            <if test="warehouseId != null "> and warehouse_id = #{warehouseId}</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+            <if test="operation != null "> and operation = #{operation}</if>
+            <if test="number != null "> and number = #{number}</if>
+            <if test="numberAfterOperation != null "> and number_after_operation = #{numberAfterOperation}</if>
+            <if test="sponsor != null  and sponsor != ''"> and sponsor = #{sponsor}</if>
+        </where>
+    </select>
+
+    <select id="selectMaterialStockRecordDetailById" parameterType="Long" resultMap="MaterialStockRecordDetailResult">
+        <include refid="selectMaterialStockRecordDetailVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMaterialStockRecordDetail" parameterType="MaterialStockRecordDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into material_stock_record_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">record_id,</if>
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="operation != null">operation,</if>
+            <if test="number != null">number,</if>
+            <if test="numberAfterOperation != null">number_after_operation,</if>
+            <if test="sponsor != null">sponsor,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">#{recordId},</if>
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="operation != null">#{operation},</if>
+            <if test="number != null">#{number},</if>
+            <if test="numberAfterOperation != null">#{numberAfterOperation},</if>
+            <if test="sponsor != null">#{sponsor},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMaterialStockRecordDetail" parameterType="MaterialStockRecordDetail">
+        update material_stock_record_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="recordId != null">record_id = #{recordId},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="operation != null">operation = #{operation},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="numberAfterOperation != null">number_after_operation = #{numberAfterOperation},</if>
+            <if test="sponsor != null">sponsor = #{sponsor},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMaterialStockRecordDetailById" parameterType="Long">
+        delete from material_stock_record_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteMaterialStockRecordDetailByIds" parameterType="String">
+        delete from material_stock_record_detail where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

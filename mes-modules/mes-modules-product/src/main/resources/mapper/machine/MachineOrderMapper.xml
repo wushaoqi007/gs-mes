@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.machine.infrastructure.mapper.MachineOrderMapper">
+
+
+    <select id="selectPartList" parameterType="MachineOrderPartListQuery" resultType="MachineOrderPartR">
+        SELECT
+        id orderDetailId,
+        serial_no orderSerialNo,
+        inquiry_price_serial_no,
+        requirement_serial_no,
+        project_code,
+        material_id,
+        part_code,
+        part_name,
+        part_version,
+        process_number,
+        received_number,
+        receive_time,
+        process_deadline,
+        plan_deadline,
+        provider,
+        surface_treatment,
+        raw_material,
+        weight,
+        hierarchy,
+        designer,
+        remark
+        FROM
+        machine_order_detail
+        <where>
+            <if test="orderSerialNo != null and orderSerialNo != ''">and serial_no = #{orderSerialNo}</if>
+            <if test="projectCode != null and projectCode != ''">and project_code = #{projectCode}</if>
+            <if test="requirementSerialNo != null and requirementSerialNo != ''">and requirement_serial_no = #{requirementSerialNo}</if>
+            <if test="part != null  and part != ''">and (part_code LIKE concat('%', #{part}, '%') or part_name LIKE concat('%', #{part}, '%'))</if>
+            <if test="designer != null and designer != ''">and designer = #{designer}</if>
+            <if test="materialId != null  and materialId != ''">and serial_no in (select serial_no from machine_order_detail
+                detail where
+                detail.material_id = #{materialId})
+            </if>
+        </where>
+        order by plan_deadline desc
+    </select>
+
+    <select id="selectExportDataList" parameterType="MachineOrderExportQuery" resultType="MachineOrderExportR">
+        SELECT
+        a.order_time,
+        b.serial_no,
+        b.provider,
+        b.project_code,
+        b.part_code,
+        b.part_name,
+        b.part_version,
+        b.process_number,
+        b.received_number,
+        b.receive_time,
+        b.unit_price,
+        b.total_price,
+        b.process_deadline,
+        b.plan_deadline,
+        b.raw_material,
+        b.weight,
+        b.hierarchy,
+        b.designer,
+        b.remark
+        FROM
+        machine_order_detail b left join machine_order a on a.serial_no=b.serial_no
+        <where>
+            a.`data_status`=3
+            <if test="serialNo != null and serialNo != ''">and a.serial_no = #{serialNo}</if>
+            <if test="provider != null and provider != ''">and a.provider = #{provider}</if>
+            <if test="start != null ">and a.order_time &gt;= #{start}</if>
+            <if test="end != null ">and a.order_time &lt;= #{end}</if>
+        </where>
+        order by a.order_time,b.provider asc
+    </select>
+
+</mapper>

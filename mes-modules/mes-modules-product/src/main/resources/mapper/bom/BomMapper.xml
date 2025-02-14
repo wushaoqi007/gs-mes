@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.bom.mapper.BomMapper">
+
+    <select id="listNumberFromLpWh" parameterType="Long" resultType="MaterialNumberDto">
+        SELECT stock.number,
+               wh.CODE wh_code,
+               wh.NAME wh_name
+        FROM material_stock stock
+                 LEFT JOIN base_warehouse wh ON stock.warehouse_id = wh.id
+        WHERE stock.material_id = #{materialId}
+          AND wh.stage = 9
+    </select>
+</mapper>

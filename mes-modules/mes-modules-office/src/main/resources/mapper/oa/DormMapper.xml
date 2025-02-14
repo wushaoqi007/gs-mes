@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.oa.infrastructure.mapper.DormMapper">
+
+    <select id="selectDormList" resultType="com.greenstone.mes.oa.infrastructure.persistence.DormDo"
+            parameterType="com.greenstone.mes.oa.dto.query.DormListQuery">
+        select d.*
+        from oa_dorm d
+        <if test="query.employeeName != null and query.employeeName != ''">
+            left join oa_dorm_member dm on d.dorm_no = dm.dorm_no
+        </if>
+        <where>
+            <if test="query.cityType == @com.greenstone.mes.oa.enums.DormCityType@WUXI">and d.city = '无锡市'</if>
+            <if test="query.cityType == @com.greenstone.mes.oa.enums.DormCityType@OTHER">and d.city != '无锡市'</if>
+            <if test="query.dormNo != null and query.dormNo != ''">and d.dorm_no = #{query.dormNo}</if>
+            <if test="query.employeeName != null and query.employeeName != ''">
+                and dm.employee_name = #{query.employeeName}
+            </if>
+        </where>
+    </select>
+
+</mapper>

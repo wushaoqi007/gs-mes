@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.greenstone.mes.common.redis.configure.RedisConfig,\
+  com.greenstone.mes.common.redis.service.RedisService
+
+  

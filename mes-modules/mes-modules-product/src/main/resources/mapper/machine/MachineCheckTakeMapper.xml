@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.machine.infrastructure.mapper.MachineCheckTakeMapper">
+
+
+    <select id="listRecord" parameterType="MachineRecordFuzzyQuery" resultType="MachineCheckTakeRecord">
+        SELECT
+        a.id,
+        a.serial_no,
+        b.`status`,
+        b.take_time,
+        b.take_by,
+        b.take_by_id,
+        b.take_by_no,
+        b.sponsor,
+        b.sponsor_id,
+        b.remark,
+        b.is_signed,
+        b.sp_no,
+        a.order_serial_no,
+        a.order_detail_id,
+        a.requirement_serial_no,
+        a.project_code,
+        a.material_id,
+        a.part_code,
+        a.part_name,
+        a.part_version,
+        a.designer,
+        a.take_number,
+        a.out_warehouse_code
+        FROM
+        `machine_check_take_detail` a
+        LEFT JOIN `machine_check_take` b ON a.serial_no = b.serial_no
+        <where>
+            and b.`status` in (1,9)
+            <if test="key != null and key != ''">and( a.serial_no LIKE concat('%', #{key}, '%') or a.project_code LIKE concat('%', #{key}, '%') or a.part_code LIKE concat('%', #{key}, '%'))</if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+</mapper>

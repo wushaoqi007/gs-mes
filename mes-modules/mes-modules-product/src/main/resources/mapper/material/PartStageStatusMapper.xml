@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.material.infrastructure.mapper.PartStageStatusMapper">
+
+
+    <select id="selectPartUsedList" parameterType="PartsUsedReq" resultType="PartUsedResp">
+        SELECT
+        b.number usedNum,
+        b.worksheet_code,
+        a.project_code,
+        a.component_code,
+        a.component_name,
+        a.CODE part_code,
+        a.version part_version,
+        a.`name` partName,
+        a.current_number total,
+        a.surface_treatment,
+        a.raw_material,
+        a.weight,
+        a.designer,
+        a.provider,
+        a.processing_time,
+        a.plan_time,
+        b.create_time first_in_time
+        FROM
+        purchase_order_detail a
+        LEFT JOIN material_stock_record_detail b ON a.material_id = b.material_id
+        <where>
+            <if test="projectCode != null and projectCode != ''">and a.project_code = #{projectCode}</if>
+            <if test="startTime != null">and b.create_time &gt;= #{startTime}</if>
+            <if test="endTime != null">and b.create_time &lt;= #{endTime}</if>
+            AND b.stage_operation = 11
+            AND b.operation = 1
+            order by b.create_time desc
+        </where>
+    </select>
+
+    <select id="selectPartReworkList" parameterType="PartsReworkReq" resultType="PartReworkResp">
+        SELECT
+        b.number reworkNum,
+        b.worksheet_code,
+        a.project_code,
+        a.component_code,
+        a.component_name,
+        a.CODE part_code,
+        a.version part_version,
+        a.`name` partName,
+        a.current_number total,
+        a.surface_treatment,
+        a.raw_material,
+        a.weight,
+        a.designer,
+        a.provider,
+        a.processing_time,
+        a.plan_time,
+        b.create_time first_in_time
+        FROM
+        purchase_order_detail a
+        LEFT JOIN material_stock_record_detail b ON a.material_id = b.material_id
+        <where>
+            <if test="projectCode != null and projectCode != ''">and a.project_code = #{projectCode}</if>
+            <if test="startTime != null">and b.create_time &gt;= #{startTime}</if>
+            <if test="endTime != null">and b.create_time &lt;= #{endTime}</if>
+            AND b.stage_operation = 5
+            AND b.operation = 0
+            order by b.create_time desc
+        </where>
+    </select>
+
+    <select id="partProviderStat" parameterType="PartsReworkStatReq" resultType="PartReworkStatResp">
+        SELECT
+        a.provider,
+        sum( b.number ) total
+        FROM
+        purchase_order_detail a
+        LEFT JOIN material_stock_record_detail b ON a.material_id = b.material_id
+        <where>
+            b.stage_operation IN ( 3, 4, 5 )
+            AND b.operation = 0
+            <if test="projectCode != null and projectCode != ''">and a.project_code = #{projectCode}</if>
+            <if test="startTime != null">and b.create_time &gt;= #{startTime}</if>
+            <if test="endTime != null">and b.create_time &lt;= #{endTime}</if>
+            and a.provider is not null group by a.provider;
+        </where>
+    </select>
+
+    <select id="partReworkStat" parameterType="PartsReworkStatReq" resultType="PartReworkStatResp">
+        select
+        a.provider,
+        sum(b.number) reworkTotal
+        FROM
+        purchase_order_detail a
+        LEFT JOIN material_stock_record_detail b ON a.material_id = b.material_id
+        <where>
+            b.stage_operation =5 AND b.operation = 0
+            <if test="projectCode != null and projectCode != ''">and a.project_code = #{projectCode}</if>
+            <if test="startTime != null">and b.create_time &gt;= #{startTime}</if>
+            <if test="endTime != null">and b.create_time &lt;= #{endTime}</if>
+            and a.provider is not null group by a.provider;
+        </where>
+    </select>
+
+    <select id="selectProgressList" parameterType="MaterialWorksheetProgressStatReq"
+            resultType="PartStageStatusListResp">
+        SELECT
+        b.stage,
+        b.stock_num stockNum,
+        b.in_stock_total inStockTotal,
+        b.out_stock_total outStockTotal,
+        b.first_in_time firstInTime,
+        b.first_out_time firstOutTime,
+        b.worksheet_id,
+        b.worksheet_detail_id,
+        b.material_id,
+        a.project_code,
+        a.component_code,
+        a.component_name,
+        a.`code` partCode,
+        a.version partVersion,
+        a.`name` partName,
+        a.current_number total,
+        a.surface_treatment,
+        a.raw_material,
+        a.weight,
+        a.print_date,
+        a.provider,
+        a.processing_time,
+        a.plan_time,
+        a.receiving_time,
+        a.designer,
+        b.create_by
+        FROM
+        purchase_order_detail a
+        LEFT JOIN material_part_stage_status b ON a.id = b.worksheet_detail_id
+        <where>
+            a.`status` > 1
+            <if test="projectCode != null and projectCode != ''">and a.project_code = #{projectCode}</if>
+            <if test="componentCode != null and componentCode != ''">and a.component_code = #{componentCode}</if>
+            <if test="partCode != null and partCode != ''">and a.`code` = #{partCode}</if>
+            AND b.id IS NOT NULL
+        </where>
+    </select>
+
+
+</mapper>

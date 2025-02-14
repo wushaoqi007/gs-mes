@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.ces.infrastructure.mapper.CesReturnMapper">
+
+    <select id="listItem" parameterType="CesReturnFuzzyQuery" resultType="CesReturnItemResult">
+        SELECT
+        a.id,
+        b.serial_no returnSerialNo,
+        a.requisition_serial_no,
+        a.warehouse_code,
+        d.requisition_date,
+        d.requisitioner_id,
+        d.requisitioner_name,
+        d.requisitioner_no,
+        b.return_date,
+        b.return_by_id,
+        b.return_by_name,
+        b.return_by_no,
+        a.item_name,
+        a.item_code,
+        a.type_name,
+        a.specification,
+        a.return_num,
+        a.loss_num,
+        c.requisition_num
+        FROM
+        `ces_return_item` a
+        LEFT JOIN ces_return b ON a.serial_no = b.serial_no
+        LEFT JOIN ces_requisition_item c ON a.requisition_item_id = c.id
+        LEFT JOIN ces_requisition d ON a.requisition_serial_no = d.serial_no
+        <where>
+            <if test="key != null  and key != ''">AND (
+                        a.`item_code` LIKE concat('%', #{key},'%')
+                     or a.`item_name` LIKE concat('%', #{key},'%')
+                     or a.`serial_no` LIKE concat('%', #{key},'%')
+                     or a.`requisition_serial_no` LIKE concat('%', #{key},'%')
+                     or b.`return_by_name` LIKE concat('%', #{key},'%')
+                     or b.`return_by_no` LIKE concat('%', #{key},'%')
+                     or d.`requisitioner_no` LIKE concat('%', #{key},'%')
+                     or d.`requisitioner_name` LIKE concat('%', #{key},'%'))
+            </if>
+        </where>
+    </select>
+
+</mapper>

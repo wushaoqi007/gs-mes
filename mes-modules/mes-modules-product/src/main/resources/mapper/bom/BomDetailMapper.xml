@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.bom.mapper.BomDetailMapper">
+
+    <resultMap type="BomDetail" id="BomDetailResult">
+        <result property="id"    column="id"    />
+        <result property="bomId"    column="bom_id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="materialNumber"    column="material_number"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+    </resultMap>
+
+    <sql id="selectBomDetailVo">
+        select id, bom_id, material_id, material_number, create_time, create_by, update_time, update_by from bom_detail
+    </sql>
+
+    <select id="selectBomDetailList" parameterType="BomDetail" resultMap="BomDetailResult">
+        <include refid="selectBomDetailVo"/>
+        <where>
+            <if test="bomId != null "> and bom_id = #{bomId}</if>
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+            <if test="materialNumber != null "> and material_number = #{materialNumber}</if>
+        </where>
+    </select>
+
+    <select id="selectBomDetailById" parameterType="Long" resultMap="BomDetailResult">
+        <include refid="selectBomDetailVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBomDetail" parameterType="BomDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into bom_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bomId != null">bom_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="materialNumber != null">material_number,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bomId != null">#{bomId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="materialNumber != null">#{materialNumber},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBomDetail" parameterType="BomDetail">
+        update bom_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="bomId != null">bom_id = #{bomId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="materialNumber != null">material_number = #{materialNumber},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBomDetailById" parameterType="Long">
+        delete from bom_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteBomDetailByIds" parameterType="String">
+        delete from bom_detail where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

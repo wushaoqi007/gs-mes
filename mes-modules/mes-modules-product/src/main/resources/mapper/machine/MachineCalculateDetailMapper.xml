@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.machine.infrastructure.mapper.MachineCalculateDetailMapper">
+
+
+    <select id="selectDetailBySerialNo" parameterType="String" resultType="MachineCalculateDetail">
+        SELECT a.id,
+               a.serial_no,
+               a.requirement_serial_no,
+               a.project_code,
+               a.material_id,
+               a.part_code,
+               a.part_version,
+               a.part_name,
+               a.part_number,
+               a.total_price,
+               a.calculate_price,
+               a.calculate_by,
+               a.calculate_time,
+               a.calculate_by_id,
+               a.calculate_json,
+               b.price materialCalculatePrice,
+               b.calculate_by materialCalculateBy,
+               b.calculate_time materialCalculateTime,
+               b.calculate_by_id materialCalculateById,
+               b.calculate_json materialCalculateJson,
+               b.raw_material,
+               b.weight
+        FROM machine_calculate_detail a
+                 LEFT JOIN base_material b ON a.material_id = b.id
+        where a.serial_no = #{serialNo}
+    </select>
+
+</mapper>

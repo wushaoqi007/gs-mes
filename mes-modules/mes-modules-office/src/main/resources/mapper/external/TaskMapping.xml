@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.external.infrastructure.mapper.TaskMapper">
+
+    <select id="pendingTasks" parameterType="Long" resultType="TaskDO">
+        SELECT t.task_id,
+               t.process_instance_id,
+               t.applied_by,
+               t.applied_by_name,
+               t.applied_time,
+               t.form_id,
+               t.form_name,
+               t.serial_no,
+               t.task_status
+        FROM flow_task_identity_link l
+                 LEFT JOIN flow_task t ON l.task_id = t.task_id
+        WHERE l.user_id = #{userId}
+        order by l.create_time desc
+    </select>
+
+</mapper>

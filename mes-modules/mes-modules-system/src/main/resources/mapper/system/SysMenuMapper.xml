@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.system.infrastructure.mapper.SysMenuMapper">
+
+	<resultMap type="com.greenstone.mes.system.infrastructure.po.MenuPo" id="SysMenuResult">
+		<id     property="menuId"         column="menu_id"        />
+		<result property="menuName"       column="menu_name"      />
+		<result property="parentId"       column="parent_id"      />
+		<result property="orderNum"       column="order_num"      />
+		<result property="path"           column="path"           />
+		<result property="component"      column="component"      />
+		<result property="frame"        column="is_frame"       />
+		<result property="cacheable"        column="is_cache"       />
+		<result property="menuType"       column="menu_type"      />
+		<result property="visible"        column="is_visible"        />
+		<result property="activable"         column="is_active"         />
+		<result property="icon"           column="icon"           />
+		<result property="createBy"       column="create_by"      />
+		<result property="createTime"     column="create_time"    />
+		<result property="updateTime"     column="update_time"    />
+		<result property="updateBy"       column="update_by"      />
+		<result property="remark"         column="remark"         />
+	</resultMap>
+
+	<sql id="selectMenuVo">
+        select menu_id, menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, is_visible, is_active,
+			icon, create_time
+		from sys_menu
+    </sql>
+
+    <select id="selectMenuList" parameterType="MenuPo" resultMap="SysMenuResult">
+		<include refid="selectMenuVo"/>
+		<where>
+			<if test="menuName != null and menuName != ''">
+				AND menu_name like concat('%', #{menuName}, '%')
+			</if>
+			<if test="visible != null and visible != ''">
+				AND is_visible = #{visible}
+			</if>
+			<if test="status != null and status != ''">
+				AND is_active = #{status}
+			</if>
+		</where>
+		order by parent_id, order_num
+	</select>
+
+	<select id="selectMenuTreeAll" resultMap="SysMenuResult">
+		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.is_visible, m.is_active, m.is_frame,
+						m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time
+		from sys_menu m where m.is_active = 1
+		order by m.parent_id, m.order_num
+	</select>
+
+	<select id="selectMenuListByUserId" parameterType="MenuPo" resultMap="SysMenuResult">
+		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.is_visible, m.is_active, m.is_frame,
+		m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time
+		from sys_menu m
+		left join sys_role_menu rm on m.menu_id = rm.menu_id
+		left join sys_user_role ur on rm.role_id = ur.role_id
+		left join sys_role ro on ur.role_id = ro.role_id
+		where ur.user_id = #{params.userId}
+		<if test="menuName != null and menuName != ''">
+            AND m.menu_name like concat('%', #{menuName}, '%')
+		</if>
+		<if test="visible != null and visible != ''">
+            AND m.is_visible = #{visible}
+		</if>
+		<if test="status != null and status != ''">
+            AND m.is_active = #{status}
+		</if>
+		order by m.parent_id, m.order_num
+	</select>
+
+    <select id="selectMenuTreeByUserId" parameterType="Long" resultMap="SysMenuResult">
+		select distinct m.menu_id, m.parent_id, m.menu_name, m.path, m.component, m.is_visible, m.is_active, m.is_frame,
+						m.is_cache, m.menu_type, m.icon, m.order_num, m.create_time
+		from sys_menu m
+			 left join sys_role_menu rm on m.menu_id = rm.menu_id
+			 left join sys_user_role ur on rm.role_id = ur.role_id
+			 left join sys_role ro on ur.role_id = ro.role_id
+			 left join sys_user u on ur.user_id = u.user_id
+		where u.user_id = #{userId} and m.is_active = 1  AND ro.status = 0
+		order by m.parent_id, m.order_num
+	</select>
+
+	<select id="selectMenuListByRoleId" resultType="String">
+		select m.menu_id
+		from sys_menu m
+            left join sys_role_menu rm on m.menu_id = rm.menu_id
+        where rm.role_id = #{roleId}
+            <if test="menuCheckStrictly">
+              and m.menu_id not in (select m.parent_id from sys_menu m inner join sys_role_menu rm on m.menu_id = rm.menu_id and rm.role_id = #{roleId})
+            </if>
+		order by m.parent_id, m.order_num
+	</select>
+
+	<select id="selectMenuPerms" resultType="String">
+		select distinct m.perms
+		from sys_menu m
+			 left join sys_role_menu rm on m.menu_id = rm.menu_id
+			 left join sys_user_role ur on rm.role_id = ur.role_id
+	</select>
+
+	<select id="selectMenuPermsByUserId" parameterType="Long" resultType="String">
+		select distinct m.perms
+		from sys_menu m
+			 left join sys_role_menu rm on m.menu_id = rm.menu_id
+			 left join sys_user_role ur on rm.role_id = ur.role_id
+			 left join sys_role r on r.role_id = ur.role_id
+		where m.status = '0' and r.status = '0' and ur.user_id = #{userId}
+	</select>
+
+	 <select id="hasChildByMenuId" resultType="Integer">
+	    select count(1) from sys_menu where parent_id = #{menuId}
+	</select>
+
+	<select id="checkMenuNameUnique" parameterType="SysMenu" resultMap="SysMenuResult">
+		<include refid="selectMenuVo"/>
+		where menu_name=#{menuName} and parent_id = #{parentId} limit 1
+	</select>
+
+</mapper> 

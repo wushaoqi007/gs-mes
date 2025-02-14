@@ -1,0 +1,140 @@
+version : '3.8'
+services:
+  gs-mes-nacos:
+    container_name: gs-mes-nacos
+    image: nacos/nacos-server
+    build:
+      context: ./nacos
+    environment:
+      - MODE=standalone
+    volumes:
+      - ./nacos/logs/:/home/nacos/logs
+      - ./nacos/conf/application.properties:/home/nacos/conf/application.properties
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    depends_on:
+      - gs-mes-mysql
+  gs-mes-mysql:
+    container_name: gs-mes-mysql
+    image: mysql:5.7
+    build:
+      context: ./mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/conf:/etc/mysql/conf.d
+      - ./mysql/logs:/logs
+      - ./mysql/data:/var/lib/mysql
+    command: [
+          'mysqld',
+          '--innodb-buffer-pool-size=80M',
+          '--character-set-server=utf8mb4',
+          '--collation-server=utf8mb4_unicode_ci',
+          '--default-time-zone=+8:00',
+          '--lower-case-table-names=1'
+        ]
+    environment:
+      MYSQL_DATABASE: 'ry-cloud'
+      MYSQL_ROOT_PASSWORD: password
+  gs-mes-redis:
+    container_name: gs-mes-redis
+    image: redis
+    build:
+      context: ./redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/conf/redis.conf:/home/gs-mes/redis/redis.conf
+      - ./redis/data:/data
+    command: redis-server /home/gs-mes/redis/redis.conf
+  gs-mes-nginx:
+    container_name: gs-mes-nginx
+    image: nginx
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/html/dist:/home/gs-mes/projects/gs-mes-ui
+      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/logs:/var/log/nginx
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - gs-mes-gateway
+    links:
+      - gs-mes-gateway
+  gs-mes-gateway:
+    container_name: gs-mes-gateway
+    build:
+      context: ./gs-mes/gateway
+      dockerfile: dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - gs-mes-redis
+    links:
+      - gs-mes-redis
+  gs-mes-auth:
+    container_name: gs-mes-auth
+    build:
+      context: ./gs-mes/auth
+      dockerfile: dockerfile
+    ports:
+      - "9200:9200"
+    depends_on:
+      - gs-mes-redis
+    links:
+      - gs-mes-redis
+  gs-mes-modules-system:
+    container_name: gs-mes-modules-system
+    build:
+      context: ./gs-mes/modules/system
+      dockerfile: dockerfile
+    ports:
+      - "9201:9201"
+    depends_on:
+      - gs-mes-redis
+      - gs-mes-mysql
+    links:
+      - gs-mes-redis
+      - gs-mes-mysql
+  gs-mes-modules-gen:
+    container_name: gs-mes-modules-gen
+    build:
+      context: ./gs-mes/modules/gen
+      dockerfile: dockerfile
+    ports:
+      - "9202:9202"
+    depends_on:
+      - gs-mes-mysql
+    links:
+      - gs-mes-mysql
+  gs-mes-modules-job:
+    container_name: gs-mes-modules-job
+    build:
+      context: ./gs-mes/modules/job
+      dockerfile: dockerfile
+    ports:
+      - "9203:9203"
+    depends_on:
+      - gs-mes-mysql
+    links:
+      - gs-mes-mysql
+  gs-mes-modules-file:
+    container_name: gs-mes-modules-file
+    build:
+      context: ./gs-mes/modules/file
+      dockerfile: dockerfile
+    ports:
+      - "9300:9300"
+    volumes:
+    - ./gs-mes/uploadPath:/home/gs-mes/uploadPath
+  gs-mes-visual-monitor:
+    container_name: gs-mes-visual-monitor
+    build:
+      context: ./gs-mes/visual/monitor
+      dockerfile: dockerfile
+    ports:
+      - "9100:9100"

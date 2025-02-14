@@ -1,0 +1,35 @@
+# Tomcat
+server:
+  port: 9322
+
+# Spring3
+spring:
+  main:
+    allow-circular-references: true
+  application:
+    # 应用名称
+    name: mes-system
+  profiles:
+    # 环境配置
+    active: @env@
+  cloud:
+    nacos:
+      discovery:
+        # 服务注册地址
+        server-addr: @nacos.ip@:@nacos.port@
+      config:
+        # 配置中心地址
+        server-addr: @nacos.ip@:@nacos.port@
+        # 配置文件格式
+        file-extension: yml
+        # 共享配置
+        shared-configs:
+          - ${spring.application.name}.yml
+          - mes-app.yml
+          - common-mysql.yml
+          - common-redis.yml
+          - common-seata.yml
+          - logback.yml
+          - prometheus.yml
+          - common-wxcp.yml
+          - common-mq.yml

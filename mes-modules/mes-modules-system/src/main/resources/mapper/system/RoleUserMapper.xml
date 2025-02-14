@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.system.infrastructure.mapper.RoleUserMapper">
+
+	<resultMap type="User" id="UserResult">
+		<id     property="userId"       column="user_id"      />
+		<result property="deptId"       column="dept_id"      />
+		<result property="userName"     column="user_name"    />
+		<result property="nickName"     column="nick_name"    />
+		<result property="employeeNo"   column="employee_no"  />
+		<result property="phonenumber"  column="phonenumber"  />
+		<result property="dept.deptId"  column="dept_id"      />
+		<result property="dept.deptName"  column="dept_name"  />
+	</resultMap>
+
+	<select id="selectUnallocatedUsers" parameterType="User" resultMap="UserResult">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name,u.employee_no,u.phonenumber, d.dept_name from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.deleted = '0' and u.user_id not in (select r.user_id from sys_role_user r group by r.user_id)
+		<if test="userId != null and userId != 0">
+			AND u.user_id = #{userId}
+		</if>
+		<if test="userName != null and userName != ''">
+			AND u.user_name like concat('%', #{userName}, '%')
+		</if>
+		<if test="nickName != null and nickName != ''">
+			AND u.nick_name like concat('%', #{nickName}, '%')
+		</if>
+		<if test="employeeNo != null and employeeNo != ''">
+			AND u.employee_no like concat('%', #{employeeNo}, '%')
+		</if>
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.phonenumber like concat('%', #{phonenumber}, '%')
+		</if>
+	</select>
+
+	<select id="selectAllocatedUsers" parameterType="Long" resultMap="UserResult">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name,u.employee_no,u.phonenumber, d.dept_name from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.deleted = '0' and u.user_id in (select r.user_id from sys_role_user r where r.role_id = #{roleId});
+	</select>
+
+ 	
+</mapper> 

@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.greenstone.mes.common.log.service.AsyncLogService,\
+  com.greenstone.mes.common.log.aspect.LogAspect

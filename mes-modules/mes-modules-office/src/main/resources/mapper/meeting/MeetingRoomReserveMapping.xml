@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.meeting.infrastructure.mapper.MeetingRoomReserveMapper">
+
+    <select id="queryMeetingRoomReserve" parameterType="MeetingRoomReserveQuery" resultType="MeetingRoomReserve">
+        SELECT
+        a.id,
+        a.room_id,
+        b.room_name,
+        b.capacity,
+        a.theme,
+        a.use_date,
+        a.start_time,
+        a.end_time,
+        a.reserve_time,
+        a.reserve_by,
+        a.reserve_by_id,
+        a.reserve_by_no,
+        a.attendee_count,
+        a.`status`,
+        a.attendee_json,
+        a.description
+        FROM
+        `meeting_room_reserve` a
+        LEFT JOIN meeting_room b ON a.room_id = b.id
+        <where>
+            <if test="reserveById != null  and reserveById != ''">AND a.reserve_by_id = #{reserveById}</if>
+            <if test="useDate != null ">AND a.use_date = #{useDate}</if>
+            <if test="roomId != null  and roomId != ''">AND a.room_id = #{roomId}</if>
+            <if test="month != null  and month != ''">AND DATE_FORMAT( a.use_date, '%Y-%m' ) = #{month}</if>
+        </where>
+        ORDER BY
+        a.create_time DESC
+    </select>
+
+    <select id="getMeetingRoomReserveById" parameterType="String" resultType="MeetingRoomReserve">
+        SELECT
+            a.id,
+            a.room_id,
+            b.room_name,
+            b.capacity,
+            a.theme,
+            a.use_date,
+            a.start_time,
+            a.end_time,
+            a.reserve_time,
+            a.reserve_by,
+            a.reserve_by_id,
+            a.reserve_by_no,
+            a.attendee_count,
+            a.`status`,
+            a.attendee_json,
+            a.description
+        FROM
+            `meeting_room_reserve` a
+                LEFT JOIN meeting_room b ON a.room_id = b.id
+        where a.id = #{id}
+    </select>
+
+</mapper>

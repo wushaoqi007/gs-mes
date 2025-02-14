@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.material.infrastructure.mapper.MaterialTaskMapper">
+
+    <resultMap type="MaterialTask" id="MaterialTaskResult">
+        <result property="id" column="id"/>
+        <result property="projectCode" column="project_code"/>
+        <result property="taskName" column="task_name"/>
+        <result property="leader" column="leader"/>
+        <result property="type" column="type"/>
+        <result property="status" column="status"/>
+        <result property="progress" column="progress"/>
+        <result property="deadline" column="deadline"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+    </resultMap>
+
+    <sql id="selectMaterialTaskVo">
+        select id,
+               project_code,
+               task_name,
+               leader,
+               type,
+               status,
+               progress,
+               deadline,
+               create_time,
+               create_by,
+               update_time,
+               update_by
+        from material_task
+    </sql>
+
+    <select id="selectMaterialTaskList" parameterType="MaterialTaskListReq" resultType="MaterialTaskListResp">
+        SELECT
+        id id,
+        project_code projectCode,
+        task_name taskName,
+        leader leader,
+        leader_name leaderName,
+        type type,
+        status status,
+        deadline deadline,
+        progress progress,
+        create_by createBy
+        from material_task
+        <where>
+            <if test="projectCode != null and projectCode != ''">and project_code = #{projectCode}</if>
+            <if test="memberId != null">and id in (select task_id from material_task_member where
+                member_id = #{memberId})
+            </if>
+            <if test="taskName != null and taskName != ''">and task_name LIKE concat('%', #{taskName}, '%')</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectMaterialTaskNotCloseList" parameterType="MaterialTaskListReq" resultType="MaterialTaskListResp">
+        SELECT
+        id id,
+        project_code projectCode,
+        task_name taskName,
+        leader leader,
+        leader_name leaderName,
+        type type,
+        status status,
+        deadline deadline,
+        progress progress,
+        create_by createBy
+        from material_task
+        <where>
+            <if test="projectCode != null and projectCode != ''">and project_code = #{projectCode}</if>
+            <if test="taskName != null and taskName != ''">and task_name LIKE concat('%', #{taskName}, '%')</if>
+            and status != 3
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectMaterialTaskMyList" parameterType="MaterialTaskListReq" resultType="MaterialTaskListResp">
+        SELECT
+        id id,
+        project_code projectCode,
+        task_name taskName,
+        leader leader,
+        leader_name leaderName,
+        type type,
+        status status,
+        deadline deadline,
+        progress progress,
+        create_by createBy
+        from material_task
+        <where>
+            <if test="projectCode != null and projectCode != ''">and project_code = #{projectCode}</if>
+            <if test="memberId != null">and id in (select task_id from material_task_member where
+                member_id = #{memberId})
+            </if>
+            <if test="taskName != null and taskName != ''">and task_name LIKE concat('%', #{taskName}, '%')</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.material.infrastructure.mapper.MaterialIssueInvMapper">
+
+    <select id="selectScanData" parameterType="String" resultType="com.greenstone.mes.material.application.dto.result.IssueScanResult">
+        SELECT
+            process_code,
+            material_code,
+            sum( total_number ) total_number
+        FROM
+            material_issue_inventory mii
+        WHERE
+            mii.material_code = #{materialCode}
+        GROUP BY
+            mii.process_code
+    </select>
+
+</mapper>

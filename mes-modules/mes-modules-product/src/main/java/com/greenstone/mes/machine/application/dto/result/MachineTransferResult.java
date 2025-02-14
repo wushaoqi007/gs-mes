@@ -1,0 +1,31 @@
+package com.greenstone.mes.machine.application.dto.result;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.greenstone.mes.external.enums.ProcessStatus;
+import com.greenstone.mes.machine.domain.entity.MachineTransferDetail;
+import com.greenstone.mes.material.infrastructure.enums.WarehouseStage;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class MachineTransferResult {
+    private String id;
+    private String serialNo;
+    private ProcessStatus status;
+    private WarehouseStage stage;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime transferTime;
+    private String transferBy;
+    private Long transferById;
+    private String transferByNo;
+    private String remark;
+    private List<MachineTransferDetail> parts;
+}

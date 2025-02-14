@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.machine.infrastructure.mapper.MachineCheckMapper">
+
+
+    <select id="selectPartList" parameterType="MachineCheckPartListQuery" resultType="MachineCheckPartR">
+        SELECT
+        a.id checkDetailId,
+        a.serial_no checkSerialNo,
+        a.order_serial_no,
+        a.order_detail_id,
+        a.project_code,
+        a.material_id,
+        a.part_code,
+        a.part_name,
+        a.part_version,
+        a.designer,
+        a.take_number,
+        a.checked_number,
+        a.to_be_checked_number,
+        a.out_warehouse_code,
+        a.check_result,
+        a.check_result_type,
+        a.in_warehouse_code,
+        a.ng_type,
+        a.sub_ng_type,
+        a.check_date,
+        a.check_by
+        FROM
+        `machine_check_detail` a left join machine_check b on a.serial_no=b.serial_no
+        <where>
+            b.status=1
+            <if test="checkSerialNo != null and checkSerialNo != ''">and a.serial_no = #{checkSerialNo}</if>
+            <if test="orderSerialNo != null and orderSerialNo != ''">and a.order_serial_no = #{orderSerialNo}</if>
+            <if test="projectCode != null and projectCode != ''">and a.project_code = #{projectCode}</if>
+            <if test="part != null  and part != ''">and (part_code LIKE concat('%', #{part}, '%') or part_name LIKE concat('%', #{part}, '%'))</if>
+            <if test="designer != null and designer != ''">and a.designer = #{designer}</if>
+            <if test="checked != null and checked == 'Y'.toString()">and a.check_result_type is not null</if>
+            <if test="checked != null and checked == 'N'.toString()">and a.check_result_type is null</if>
+            <if test="checkResult != null">and a.check_result = #{checkResult}</if>
+            <if test="checkResultType != null">and a.check_result_type = #{checkResultType}</if>
+            <if test="ngType != null and ngType != ''">and a.ng_type = #{ngType}</if>
+            <if test="subNgType != null and subNgType != ''">and a.sub_ng_type = #{subNgType}</if>
+            <if test="checkBy != null and checkBy != ''">and a.check_by LIKE concat('%', #{checkBy}, '%')</if>
+            <if test="checkDateStart != null">AND a.check_date &gt;= #{checkDateStart} </if>
+            <if test="checkDateEnd != null">AND a.check_date &lt;=  #{checkDateEnd} </if>
+        </where>
+        order by a.check_date desc
+    </select>
+
+    <select id="listRecord" parameterType="MachineCheckPartListQuery" resultType="MachineCheckRecord">
+        SELECT
+        a.id checkDetailId,
+        a.serial_no checkSerialNo,
+        a.order_serial_no,
+        a.order_detail_id,
+        a.project_code,
+        a.material_id,
+        a.part_code,
+        a.part_name,
+        a.part_version,
+        a.designer,
+        a.take_number,
+        a.checked_number,
+        a.to_be_checked_number,
+        a.out_warehouse_code,
+        a.check_result,
+        a.check_result_type,
+        a.in_warehouse_code,
+        a.ng_type,
+        a.sub_ng_type,
+        a.check_date,
+        a.create_time,
+        a.check_by
+        FROM
+        `machine_check_detail` a left join machine_check b on a.serial_no=b.serial_no
+        <where>
+            b.status=1
+            <if test="checkSerialNo != null and checkSerialNo != ''">and a.serial_no = #{checkSerialNo}</if>
+            <if test="orderSerialNo != null and orderSerialNo != ''">and a.order_serial_no = #{orderSerialNo}</if>
+            <if test="projectCode != null and projectCode != ''">and a.project_code = #{projectCode}</if>
+            <if test="part != null  and part != ''">and (part_code LIKE concat('%', #{part}, '%') or part_name LIKE concat('%', #{part}, '%'))</if>
+            <if test="designer != null and designer != ''">and a.designer = #{designer}</if>
+            <if test="checked != null and checked == 'Y'.toString()">and a.check_result_type is not null</if>
+            <if test="checked != null and checked == 'N'.toString()">and a.check_result_type is null</if>
+            <if test="checkResult != null">and a.check_result = #{checkResult}</if>
+            <if test="checkResultType != null">and a.check_result_type = #{checkResultType}</if>
+            <if test="ngType != null and ngType != ''">and a.ng_type = #{ngType}</if>
+            <if test="subNgType != null and subNgType != ''">and a.sub_ng_type = #{subNgType}</if>
+            <if test="checkBy != null and checkBy != ''">and a.check_by LIKE concat('%', #{checkBy}, '%')</if>
+            <if test="checkDateStart != null">AND a.check_date &gt;= #{checkDateStart} </if>
+            <if test="checkDateEnd != null">AND a.check_date &lt;=  #{checkDateEnd} </if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+    <select id="reworkRecord" parameterType="MachineRecordQuery" resultType="MachineCheckRecord">
+        SELECT
+        a.id checkDetailId,
+        a.serial_no checkSerialNo,
+        a.order_serial_no,
+        a.order_detail_id,
+        a.project_code,
+        a.material_id,
+        a.part_code,
+        a.part_name,
+        a.part_version,
+        a.designer,
+        a.take_number,
+        a.checked_number,
+        a.to_be_checked_number,
+        a.out_warehouse_code,
+        a.check_result,
+        a.check_result_type,
+        a.in_warehouse_code,
+        a.ng_type,
+        a.sub_ng_type,
+        a.check_date,
+        a.create_time,
+        a.check_by,
+        a.provider
+        FROM
+        `machine_check_detail` a left join machine_check b on a.serial_no=b.serial_no
+        <where>
+            and b.`status`=1 and a.check_result_type=2
+            <if test="serialNo != null and serialNo != ''">and a.serial_no LIKE concat('%', #{serialNo}, '%')</if>
+            <if test="projectCode != null and projectCode != ''">and a.project_code LIKE concat('%', #{projectCode}, '%')</if>
+            <if test="partCode != null and partCode != ''">and a.part_code LIKE concat('%', #{partCode}, '%')</if>
+            <if test="provider != null and provider != ''">and a.provider LIKE concat('%', #{provider}, '%')</if>
+            <if test="startDate != null ">and a.check_date &gt;= #{startDate}</if>
+            <if test="endDate != null ">and a.check_date &lt;= #{endDate}</if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+    <select id="selectReworkDetails" parameterType="MachinePartScanQuery2" resultType="MachineCheckDetail">
+        SELECT
+        a.*
+        FROM
+        `machine_check_detail` a left join machine_check b on a.serial_no=b.serial_no
+        <where>
+            and b.`status`=1 and a.check_result_type=2
+            <if test="requirementSerialNo != null and requirementSerialNo != ''">and a.requirement_serial_no = #{requirementSerialNo}</if>
+            <if test="projectCode != null and projectCode != ''">and a.project_code = #{projectCode}</if>
+            <if test="partCode != null and partCode != ''">and a.part_code = #{partCode}</if>
+            <if test="partVersion != null and partVersion != ''">and a.part_version = #{partVersion}</if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+</mapper>

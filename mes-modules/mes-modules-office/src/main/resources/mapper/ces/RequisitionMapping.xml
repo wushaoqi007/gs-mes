@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.ces.infrastructure.mapper.RequisitionMapper">
+
+    <select id="listItem" parameterType="RequisitionFuzzyQuery" resultType="RequisitionItemResult">
+        SELECT
+        a.id requisitionItemId,
+        b.serial_no requisitionSerialNo,
+        a.warehouse_code warehouseCode,
+        b.requisition_date,
+        b.remark,
+        b.requisitioner_id,
+        b.requisitioner_name,
+        b.requisitioner_no,
+        a.item_name,
+        a.item_code,
+        a.type_name,
+        a.specification,
+        a.requisition_num,
+        a.unit_price,
+        a.unit,
+        a.is_need_return needReturn,
+        a.return_date,
+        a.return_num,
+        a.loss_num
+        FROM
+        `ces_requisition_item` a
+        LEFT JOIN ces_requisition b ON a.serial_no = b.serial_no
+        <where>
+            <if test="key != null  and key != ''">AND (
+                        a.`item_code` LIKE concat('%', #{key},'%')
+                     or a.`item_name` LIKE concat('%', #{key},'%')
+                     or a.`serial_no` LIKE concat('%', #{key},'%')
+                     or b.`requisitioner_no` LIKE concat('%', #{key},'%')
+                     or b.`requisitioner_name` LIKE concat('%', #{key},'%'))
+            </if>
+            <if test="toBeReturned != null  and toBeReturned != '' and toBeReturned=='Y'.toString()">AND b.`status`=3 AND a.requisition_num>(IFNULL(a.return_num,0)+IFNULL(a.loss_num,0))</if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.material.infrastructure.mapper.StatResultDesignerMapper">
+
+
+    <select id="statDataForDesigner" parameterType="StatDailyQuery" resultType="StatDataDesigner">
+        SELECT
+        a.`code` partCode,
+        a.`name` partName,
+        a.version partVersion,
+        a.component_code,
+        a.component_name,
+        a.project_code,
+        a.paper_number,
+        a.current_number partNumber,
+        a.create_time,
+        b.design_deadline,
+        a.designer,
+        a.is_fast fastParts,
+        a.is_update_parts updateParts,
+        a.is_repair_parts repairParts
+        FROM
+        purchase_order_detail a
+        LEFT JOIN material_project b ON a.project_code = b.project_code
+        <where>
+            AND a.`status` > 1
+            AND a.`status` != 7
+            <if test="startTime != null ">and a.create_time &gt;= #{startTime}</if>
+            <if test="endTime != null ">and a.create_time &lt;= #{endTime}</if>
+        </where>
+    </select>
+
+
+
+</mapper>

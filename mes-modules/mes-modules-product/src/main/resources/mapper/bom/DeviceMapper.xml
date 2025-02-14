@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.bom.mapper.DeviceMapper">
+
+    <resultMap type="Device" id="DeviceResult">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="version" column="version"/>
+        <result property="bomId" column="bom_id"/>
+        <result property="projectCode" column="project_code"/>
+        <result property="type" column="type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+    </resultMap>
+
+    <sql id="selectDeviceVo">
+        select id,
+               code,
+               name,
+               version,
+               bom_id,
+               project_code,
+               type,
+               create_time,
+               create_by,
+               update_time,
+               update_by
+        from device
+    </sql>
+
+
+    <select id="selectDeviceById" parameterType="Long" resultMap="DeviceResult">
+        <include refid="selectDeviceVo"/>
+        where id = #{id}
+    </select>
+
+
+</mapper>

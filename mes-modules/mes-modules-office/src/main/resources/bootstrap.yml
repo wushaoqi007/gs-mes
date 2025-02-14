@@ -1,0 +1,58 @@
+# Tomcat
+server:
+  port: 9892
+
+# Spring
+spring:
+  jackson:
+    default-property-inclusion: NON_NULL
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  main:
+    allow-circular-references: true
+  application:
+    # 应用名称
+    name: mes-office
+  profiles:
+    # 环境配置
+    active: @env@,mail
+  cloud:
+    nacos:
+      discovery:
+        # 服务注册地址
+        server-addr: @nacos.ip@:@nacos.port@
+      config:
+        # 配置中心地址
+        server-addr: @nacos.ip@:@nacos.port@
+        # 配置文件格式
+        file-extension: yml
+        # 共享配置
+        shared-configs:
+          - ${spring.application.name}.yml
+          - mes-app.yml
+          - common-mysql.yml
+          - common-redis.yml
+          - common-seata.yml
+          - logback.yml
+          - prometheus.yml
+          - common-mq.yml
+          - common-wxcp.yml
+  messages:
+    basename: i18n/message,i18n/public_message
+    encoding: utf-8
+
+mail:
+  server:
+    apikey: 0C70A6-D07D7C-B1FD83-88E42D-4BF676
+    host: mail.wxgreenstone.com
+  mailboxes:
+    - host: mail.wxgreenstone.com
+      username: sys@wxgreenstone.com # 配置邮箱用户名(你的邮箱地址)
+      password: ShoNsARypAGNESsadDaTEStEdErRaiLI,%,42 # 配置申请到的授权码
+      personal: "格林司通管理系统" # 发送方名称
+      charset: "UTF-8" # 编码
+    - host: mail.wxgreenstone.com
+      username: wxcg@wxgreenstone.com # 配置邮箱用户名(你的邮箱地址)
+      password: 32,ONtonMetTyxIShEranatrYLVERloDOCC,% # 配置申请到的授权码
+      personal: "格林司通机加工采购" # 发送方名称
+      charset: "UTF-8" # 编码

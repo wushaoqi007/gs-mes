@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.machine.infrastructure.mapper.MachineInquiryPriceMapper">
+
+
+    <select id="selectListByFuzzy" parameterType="MachineFuzzyQuery" resultType="MachineInquiryPrice">
+        SELECT
+        id,
+        serial_no,
+        STATUS,
+        handle_status,
+        category_total,
+        part_total,
+        paper_total,
+        submit_time,
+        submit_by,
+        submit_by_id,
+        is_urgent AS urgent,
+        remark,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        machine_inquiry_price
+        <where>
+            <if test="key != null and key != ''">and serial_no = #{key}</if>
+            <if test="key != null  and key != ''">or serial_no in (select serial_no from machine_inquiry_price_detail where part_code LIKE concat('%', #{key}, '%'))
+            </if>
+        </where>
+        order by create_time DESC
+    </select>
+
+    <select id="selectListByScan" parameterType="MachinePartScanQuery" resultType="MachineInquiryPrice">
+        SELECT
+        id,
+        serial_no,
+        STATUS,
+        handle_status,
+        category_total,
+        part_total,
+        paper_total,
+        submit_time,
+        submit_by,
+        submit_by_id,
+        is_urgent AS urgent,
+        remark,
+        create_by,
+        create_time,
+        update_by,
+        update_time
+        FROM
+        machine_inquiry_price
+        <where>
+            <if test="partCode != null and partCode != '' and serialNo != null and serialNo != '' and projectCode != null and projectCode != '' and partVersion != null and partVersion != ''">
+                serial_no IN (
+                SELECT
+                serial_no
+                FROM
+                machine_inquiry_price_detail
+                WHERE
+                requirement_serial_no = #{serialNo}
+                AND project_code = #{projectCode}
+                AND part_code = #{partCode}
+                AND part_version = #{partVersion})
+            </if>
+        </where>
+        order by create_time DESC
+    </select>
+
+</mapper>

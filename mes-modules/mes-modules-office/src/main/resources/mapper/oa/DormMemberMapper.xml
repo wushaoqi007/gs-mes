@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.oa.infrastructure.mapper.DormMemberMapper">
+
+    <select id="selectDormMember" resultType="com.greenstone.mes.oa.dto.result.DormMemberResult"
+            parameterType="Long">
+        select d.city,
+               d.address,
+               d.room_no,
+               d.dorm_no,
+               dm.bed_no,
+               dm.employee_id,
+               dm.employee_name,
+               dm.in_time,
+               dm.telephone,
+               dm.urgent_tel,
+               dm.`status`
+        from oa_dorm_member dm
+                 left join oa_dorm d on dm.dorm_no = d.dorm_no
+        where dm.employee_id = #{employeeId}
+    </select>
+
+</mapper>

@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.greenstone.mes.system.api.factory.RemoteUserFallbackFactory,\
+  com.greenstone.mes.system.api.factory.RemoteLogFallbackFactory, \
+  com.greenstone.mes.file.api.factory.RemoteFileFallbackFactory

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.machine.infrastructure.mapper.MachineStockRecordMapper">
+
+    <resultMap type="MaterialStockRecord" id="MaterialStockRecordResult">
+        <result property="id" column="id"/>
+        <result property="warehouseId" column="warehouse_id"/>
+        <result property="operation" column="operation"/>
+        <result property="sponsor" column="sponsor"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+    </resultMap>
+
+    <sql id="selectMaterialStockRecordVo">
+        select id, warehouse_id, operation, sponsor, remark, create_time, create_by
+        from machine_stock_record
+    </sql>
+
+    <select id="selectMaterialStockRecordList" parameterType="MaterialStockRecord"
+            resultMap="MaterialStockRecordResult">
+        <include refid="selectMaterialStockRecordVo"/>
+        <where>
+            <if test="warehouseId != null ">and warehouse_id = #{warehouseId}</if>
+            <if test="operation != null ">and operation = #{operation}</if>
+            <if test="sponsor != null  and sponsor != ''">and sponsor = #{sponsor}</if>
+        </where>
+    </select>
+
+    <select id="selectMaterialStockRecordById" parameterType="Long" resultMap="MaterialStockRecordResult">
+        <include refid="selectMaterialStockRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="listStockRecord" parameterType="StockRecordSearchReq" resultType="StockRecordSearchResp">
+        SELECT
+        record.id record_id,
+        record.sponsor,
+        record.create_by operator,
+        wh.`name` warehouse_name,
+        record.operation operation,
+        record.remark,
+        record.create_time operation_time
+        FROM
+        machine_stock_record record
+        LEFT JOIN base_warehouse wh ON record.warehouse_id = wh.id
+        <where>
+            <if test="warehouseId != null ">and warehouse_id = #{warehouseId}</if>
+            <if test="sponsor != null  and sponsor != ''">and sponsor = #{sponsor}</if>
+            <if test="operationTimeFrom != null  and operationTimeTo != null">and record.create_time &gt;=
+                #{operationTimeFrom} and record.create_time &lt;= #{operationTimeTo}
+            </if>
+        </where>
+        ORDER BY record.create_time DESC
+    </select>
+
+    <select id="listStockRecordDetail" parameterType="StockRecordDetailListReq" resultType="StockRecordDetailListResp">
+        SELECT wh.id              warehouse_id,
+               wh.`name`          warehouse_name,
+               record.operation   operation,
+               detail.number,
+               m.unit,
+               record.sponsor,
+               record.applicant   applicant,
+               record.applicant_no   applicantNo,
+               record.create_time operation_time
+        FROM machine_stock_record_detail detail
+                 LEFT JOIN machine_stock_record record ON record.id = detail.record_id
+                 LEFT JOIN base_warehouse wh ON wh.id = detail.warehouse_id
+                 LEFT JOIN base_material m ON m.id = detail.material_id
+        where detail.material_id = #{materialId}
+        ORDER BY detail.create_time DESC
+    </select>
+
+    <select id="listStockRecordMaterial" parameterType="StockRecordMaterialSearchReq"
+            resultType="StockRecordMaterialSearchResp">
+        SELECT
+        m.`code` material_code,
+        m.`name` material_name,
+        m.version material_version,
+        m.unit,
+        rd.number,
+        rd.project_code,
+        rd.operation,
+        rd.stage,
+        rd.action,
+        rd.behavior,
+        r.remark,
+        wh.NAME warehouse_name,
+        wh.CODE warehouse_code,
+        rd.sponsor,
+        rd.applicant applicant,
+        rd.applicant_no applicantNo,
+        rd.create_time operation_time
+        FROM
+        machine_stock_record_detail rd
+        LEFT JOIN machine_stock_record r ON rd.record_id = r.id
+        LEFT JOIN base_material m ON rd.material_id = m.id
+        LEFT JOIN base_warehouse wh ON rd.warehouse_id = wh.id
+        <where>
+            <if test="projectCode != null and projectCode != ''">and rd.project_code = #{projectCode}</if>
+            <if test="partCode != null and partCode != ''">and m.code = #{partCode}</if>
+            <if test="materialName != null and materialName != ''">and m.name LIKE concat('%', #{materialName}, '%')</if>
+            <if test="warehouseCode != null and warehouseCode !=  ''">and wh.code = #{warehouseCode}</if>
+            <if test="sponsor != null and sponsor != ''">and rd.sponsor = #{sponsor}</if>
+            <if test="operationTimeFrom != null  and operationTimeTo != null">and rd.create_time &gt;=
+                #{operationTimeFrom} and rd.create_time &lt;= #{operationTimeTo}
+            </if>
+            <if test="simple != null and simple">and (rd.behavior not in (201,203,205,301,303,305,401,501)) </if>
+        </where>
+        ORDER BY rd.create_time DESC
+    </select>
+</mapper>

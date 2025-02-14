@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.greenstone.mes.common.core.utils.SpringUtils
+
+  

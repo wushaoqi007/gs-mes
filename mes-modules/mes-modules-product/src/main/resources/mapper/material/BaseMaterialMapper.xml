@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.material.infrastructure.mapper.BaseMaterialMapper">
+
+    <resultMap type="BaseMaterial" id="BaseMaterialResult">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="version" column="version"/>
+        <result property="surfaceTreatment" column="surface_treatment"/>
+        <result property="rawMaterial" column="raw_material"/>
+        <result property="weight" column="weight"/>
+        <result property="designer" column="designer"/>
+        <result property="unit" column="unit"/>
+        <result property="type" column="type"/>
+        <result property="price" column="price"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+    </resultMap>
+
+    <sql id="selectBaseMaterialVo">
+        select id,
+               code,
+               name,
+               version,
+               designer,
+               surface_treatment,
+               raw_material,
+               weight,
+               unit,
+               type,
+               price,
+               create_time,
+               create_by,
+               update_time,
+               update_by
+        from base_material
+    </sql>
+
+    <select id="selectBaseMaterialList" parameterType="BaseMaterial" resultMap="BaseMaterialResult">
+        <include refid="selectBaseMaterialVo"/>
+        <where>
+            <if test="code != null  and code != ''">and code like concat('%', #{code}, '%')</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="designer != null  and designer != ''">and designer = #{designer}</if>
+            <if test="rawMaterial != null  and rawMaterial != ''">and raw_material = #{rawMaterial}</if>
+            <if test="type != null ">and type = #{type}</if>
+        </where>
+    </select>
+
+    <select id="selectBaseMaterialById" parameterType="Long" resultMap="BaseMaterialResult">
+        <include refid="selectBaseMaterialVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBaseMaterial" parameterType="BaseMaterial">
+        insert into base_material
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="code != null">code,</if>
+            <if test="name != null">name,</if>
+            <if test="version != null">version,</if>
+            <if test="designer != null">designer,</if>
+            <if test="rawMaterial != null">raw_material,</if>
+            <if test="unit != null">unit,</if>
+            <if test="type != null">type,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="code != null">#{code},</if>
+            <if test="name != null">#{name},</if>
+            <if test="version != null">#{version},</if>
+            <if test="designer != null">#{designer},</if>
+            <if test="rawMaterial != null">#{rawMaterial},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="type != null">#{type},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBaseMaterial" parameterType="BaseMaterial">
+        update base_material
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="code != null">code = #{code},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="designer != null">version = #{designer},</if>
+            <if test="rawMaterial != null">raw_material = #{rawMaterial},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updatePrice" parameterType="BaseMaterial">
+        update base_material
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="price != null">price = #{price},</if>
+            <if test="calculateTime != null">calculate_time = #{calculateTime},</if>
+            <if test="calculateJson != null">calculate_json = #{calculateJson},</if>
+            <if test="calculateBy != null">calculate_by = #{calculateBy},</if>
+            <if test="calculateById != null">calculate_by_id = #{calculateById},</if>
+        </trim>
+        where code = #{code} and version = #{version}
+    </update>
+
+    <delete id="deleteBaseMaterialById" parameterType="Long">
+        delete
+        from base_material
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBaseMaterialByIds" parameterType="String">
+        delete from base_material where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

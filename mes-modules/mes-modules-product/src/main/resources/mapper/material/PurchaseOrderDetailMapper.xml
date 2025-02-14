@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.material.infrastructure.mapper.PurchaseOrderDetailMapper">
+
+    <resultMap type="ProcessOrderDetailDO" id="PurchaseOrderDetailResult">
+        <result property="id" column="id"/>
+        <result property="processOrderId" column="purchase_order_id"/>
+        <result property="projectCode" column="project_code"/>
+        <result property="componentName" column="component_name"/>
+        <result property="code" column="code"/>
+        <result property="version" column="version"/>
+        <result property="name" column="name"/>
+        <result property="materialNumber" column="current_number"/>
+        <result property="paperNumber" column="paper_number"/>
+        <result property="surfaceTreatment" column="surface_treatment"/>
+        <result property="rawMaterial" column="raw_material"/>
+        <result property="weight" column="weight"/>
+        <result property="getNumber" column="get_number"/>
+        <result property="status" column="status"/>
+        <result property="isPurchase" column="is_purchase"/>
+        <result property="isFast" column="is_fast"/>
+        <result property="provider" column="provider"/>
+        <result property="processingTime" column="processing_time"/>
+        <result property="planTime" column="plan_time"/>
+        <result property="type" column="type"/>
+        <result property="comparisonResult" column="comparison_result"/>
+        <result property="scanNumber" column="scan_number"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+    </resultMap>
+
+    <sql id="selectPurchaseOrderDetailVo">
+        select id,
+               purchase_order_id processOrderId,
+               project_code,
+               component_name,
+               code,
+               version,
+               name,
+               buy_limit,
+               current_number,
+               paper_number,
+               surface_treatment,
+               raw_material,
+               weight,
+               get_number,
+               status,
+               is_purchase,
+               is_fast,
+               provider,
+               processing_time,
+               plan_time,
+               type,
+               comparison_result,
+               scan_number,
+               remark,
+               create_time,
+               create_by,
+               update_time,
+               update_by
+        from purchase_order_detail
+    </sql>
+
+    <select id="selectPurchaseOrderDetail" parameterType="Long" resultType="PurchaseOrderDetailResp">
+        SELECT b.`code`                         worksheetCode,
+               a.id                             id,
+               purchase_order_id                processOrderId,
+               a.project_code                   projectCode,
+               component_code                   componentCode,
+               component_name                   componentName,
+               CONCAT(a.`code`, "/", a.version) codeVersion,
+               NAME                             NAME,
+               current_number                   materialNumber,
+               paper_number                     paperNumber,
+               surface_treatment                surfaceTreatment,
+               raw_material                     rawMaterial,
+               weight                           weight,
+               a.get_number                     getNumber,
+               a.STATUS                         STATUS,
+               is_purchase                      isPurchase,
+               is_fast                          isFast,
+               provider                         provider,
+               processing_time                  processingTime,
+               plan_time                        planTime,
+               a.type                           type,
+               a.remark                         remark
+        FROM purchase_order_detail a
+                 LEFT JOIN purchase_order b ON a.purchase_order_id = b.id
+        where purchase_order_id = #{id}
+    </select>
+
+    <select id="selectPartsBoardList" parameterType="PartsBoardListReq" resultType="PartBoardExportResp">
+        SELECT
+        a.id as id,
+        any_value ( a.provider ) provider,
+        any_value ( a.project_code ) projectCode,
+        any_value ( a.component_name ) componentName,
+        any_value ( a.`name` ) name,
+        any_value ( a.`code` ) code,
+        any_value ( a.`version` ) version,
+        any_value ( a.raw_material ) rawMaterial,
+        any_value ( a.is_fast ) isFast,
+        any_value ( a.current_number ) materialNumber,
+        any_value ( a.get_number ) getNumber,
+        any_value ( a.receiving_time ) receivingTime,
+        any_value ( a.processing_time ) processingTime,
+        any_value ( a.plan_time ) planTime,
+        any_value ( a.designer ) designer,
+        any_value ( a.surface_treatment ) surfaceTreatment,
+        any_value ( a.good_num ) inStockNumber,
+        any_value ( a.in_good_stock_time ) inStockTime,
+        any_value ( a.create_time ) createTime,
+        any_value ( b.id ) AS materialId
+        FROM
+        `purchase_order_detail` a
+        LEFT JOIN base_material b ON a.`code` = b.`code`
+        AND a.version = b.version
+        LEFT JOIN material_stock c ON c.material_id = b.id
+        LEFT JOIN base_warehouse d ON c.warehouse_id = d.id
+        <where>
+            ( b.id IS NOT NULL AND a.in_good_stock_time IS NULL
+            <if test="projectCode != null  and projectCode != ''">AND a.project_code LIKE concat('%', #{projectCode},
+                '%')
+            </if>
+            <if test="name != null  and name != ''">AND (a.`name` LIKE concat('%', #{name}, '%') or a.`code` LIKE
+                concat('%', #{name}, '%'))
+            </if>
+            <if test="isDelay != null and isDelay == '是'.toString()">and ((d.stage=2 and
+                (UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(c.create_time))
+                &gt;=2*60*60) or (d.stage=5 and (UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(c.create_time)) &gt;=24*60*60))
+                and a.receiving_time IS NULL
+            </if>
+            <if test="isDelay != null and isDelay == '否'.toString()">and (d.stage is null or d.stage not
+                in(2,5) or (
+                d.stage = 2 AND (UNIX_TIMESTAMP(NOW())- UNIX_TIMESTAMP( c.create_time )) &lt;= 2*60*60)
+                OR (d.stage=5 AND (UNIX_TIMESTAMP( NOW())- UNIX_TIMESTAMP( c.create_time )) &lt;= 24*60*60))
+            </if>
+            ) OR ( b.id IS NOT NULL AND a.in_good_stock_time IS NOT NULL
+            AND (UNIX_TIMESTAMP(NOW())- UNIX_TIMESTAMP( a.in_good_stock_time ))
+            &lt;=
+            24 * 60 * 60 * 10
+            <if test="projectCode != null  and projectCode != ''">AND a.project_code LIKE concat('%', #{projectCode},
+                '%')
+            </if>
+            <if test="name != null  and name != ''">AND (a.`name` LIKE concat('%', #{name}, '%') or a.`code` LIKE
+                concat('%', #{name}, '%'))
+            </if>
+            <if test="isDelay != null and isDelay == '是'.toString()">and ((d.stage=2 and
+                (UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(c.create_time))
+                &gt;=2*60*60) or (d.stage=5 and (UNIX_TIMESTAMP(NOW())-UNIX_TIMESTAMP(c.create_time)) &gt;=24*60*60))
+                and a.receiving_time IS NULL
+            </if>
+            <if test="isDelay != null and isDelay == '否'.toString()">and (d.stage is null or d.stage not
+                in(2,5) or (
+                d.stage = 2 AND (UNIX_TIMESTAMP(NOW())- UNIX_TIMESTAMP( c.create_time )) &lt;= 2*60*60)
+                OR (d.stage=5 AND (UNIX_TIMESTAMP( NOW())- UNIX_TIMESTAMP( c.create_time )) &lt;= 24*60*60))
+            </if>
+        </where>
+        ) GROUP BY a.id order by a.is_fast desc ,a.update_time asc
+    </select>
+
+    <select id="selectWorksheetDetail" parameterType="WorksheetDetailListReq" resultType="WorksheetDetailResp">
+        SELECT b.code worksheetCode,
+        a.project_code projectCode,
+        a.component_code componentCode,
+        a.component_name componentName,
+        a.material_id partId,
+        a.code partCode,
+        a.version partVersion,
+        a.name partName,
+        a.designer designer,
+        a.current_number number
+        FROM purchase_order_detail a left join purchase_order b on a.purchase_order_id=b.id
+        <where>
+            <if test="worksheetCode != null and worksheetCode != ''">and b.code LIKE concat('%', #{worksheetCode},
+                '%')
+            </if>
+            <if test="designer != null and designer != ''">and a.designer LIKE concat('%', #{designer}, '%')</if>
+            <if test="projectCode != null and projectCode != ''">and a.project_code = #{projectCode}</if>
+            <if test="part != null  and part != ''">AND (a.`name` LIKE concat('%', #{part}, '%') or a.`code` LIKE
+                concat('%', #{part}, '%'))
+            </if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+    <select id="selectWorksheetPlaceOrderList" parameterType="WorkSheetPlaceOrderQuery" resultType="WorksheetPlaceOrder">
+        SELECT
+        b.part_code,
+        b.part_version,
+        a.`name` partName,
+        a.project_code,
+        a.current_number placeOrderNum,
+        b.out_stock_total receiveNum,
+        a.designer,
+        a.create_time uploadTime,
+        b.first_in_time confirmTime,
+        b.first_out_time receiveTime
+        FROM
+        purchase_order_detail a
+        LEFT JOIN material_part_stage_status b ON a.id = b.worksheet_detail_id
+        <where>
+            AND b.stage = 1
+            AND a.`status` > 1
+            AND a.`status` != 7
+            <if test="materialId != null">and b.material_id = #{materialId} </if>
+            <if test="projectCode != null and projectCode != ''">and a.project_code LIKE concat('%', #{projectCode},'%')</if>
+            <if test="designer != null and designer != ''">and a.designer LIKE concat('%', #{designer},'%')</if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+    <select id="selectWorksheetCheckList" parameterType="WorkSheetCheckCountQuery" resultType="WorksheetCheck">
+        SELECT
+        sponsor inspectors,
+        DATE_FORMAT( create_time, '%Y-%m-%d' ) checkTime,
+        sum( number ) partNum,
+        count( 1 ) paperNum
+        FROM
+        material_stock_record_detail
+        <where>
+            AND stage_operation IN ( 3, 4 )
+            AND operation = 0
+            <if test="startTime != null">AND create_time &gt;= #{startTime} </if>
+            <if test="endTime != null">AND create_time &lt;  #{endTime} </if>
+            <if test="inspectors != null and inspectors != ''">and sponsor LIKE concat('%', #{inspectors},'%')</if>
+        </where>
+        GROUP BY
+        sponsor,
+        DATE_FORMAT( create_time, '%Y-%m-%d' )
+        ORDER BY
+        checkTime ASC
+    </select>
+
+</mapper>

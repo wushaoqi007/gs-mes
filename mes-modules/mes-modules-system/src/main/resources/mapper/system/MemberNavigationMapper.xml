@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.system.infrastructure.mapper.MemberNavigationMapper">
+
+	<select id="selectDetailsByMemberId" parameterType="Long" resultType="MemberNavigation">
+		SELECT
+		mn.id,
+		mn.member_id,
+		mn.member_type,
+		mn.navigation_id,
+		na.`name` navigationName,
+		na.category,
+		na.navigation_type,
+		na.active,
+		na.function_id
+		FROM
+		sys_member_navigation mn
+		LEFT JOIN sys_navigation na ON mn.navigation_id = na.id
+		<if test="memberId != null">
+			WHERE
+			mn.member_id = #{memberId}
+		</if>
+	</select>
+
+	<select id="selectMemberNavigation" parameterType="Long" resultType="MemberNavigationResult">
+		SELECT
+		mn.navigation_id,
+		na.parent_id,
+		na.`name` navigationName,
+		na.category,
+		na.navigation_type,
+		na.active,
+		na.visible,
+		na.cacheable,
+		na.open_in_newtab,
+		na.show_navigation,
+		na.icon,
+		na.function_id,
+		na.link,
+		na.query_param,
+		na.order_num,
+		na.create_id,
+		na.create_time,
+		na.update_id,
+		na.update_time
+		FROM
+		sys_member_navigation mn
+		LEFT JOIN sys_navigation na ON mn.navigation_id = na.id
+		<if test="memberId != null">
+			WHERE
+			mn.member_id = #{memberId}
+		</if>
+	</select>
+
+ 	
+</mapper> 

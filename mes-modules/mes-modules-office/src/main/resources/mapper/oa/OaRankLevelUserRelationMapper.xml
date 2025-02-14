@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.oa.infrastructure.mapper.OaRankLevelUserRelationMapper">
+
+    <resultMap type="OaRankLevelUserRelation" id="OaRankLevelUserRelationResult">
+        <result property="id" column="id"/>
+        <result property="rankId" column="rank_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="gradeTime" column="grade_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+    </resultMap>
+
+    <sql id="selectRankLevelUserRelationVo">
+        select id,
+               rank_id,
+               user_id,
+               grade_time,
+               create_time,
+               create_by,
+               update_time,
+               update_by
+        from oa_rank_level_user_relation
+    </sql>
+
+    <select id="selectRankLevelUserRelationById" parameterType="Long" resultType="OaRankLevelUserRelationListResp">
+        SELECT r.id         id,
+               r.rank_id    rankId,
+               r.user_id userId,
+               l.rank_name  rankName,
+               r.grade_time gradeTime,
+               u.nick_name  userName,
+               l.`level`    level,
+               l.dept_id    deptId
+        FROM oa_rank_level_user_relation r
+                 LEFT JOIN oa_rank_level l ON r.rank_id = l.id
+                 LEFT JOIN mes_system.sys_user u on r.user_id = u.user_id
+        where r.id = #{id}
+    </select>
+
+
+    <select id="selectRankLevelUserRelationList" parameterType="OaRankLevelUserRelationListReq"
+            resultType="OaRankLevelUserRelationListResp">
+        SELECT r.id id,
+        r.rank_id rankId,
+        r.user_id userId,
+        l.rank_name rankName,
+        r.grade_time gradeTime,
+        u.nick_name userName,
+        l.`level` level,
+        l.dept_id deptId
+        FROM oa_rank_level_user_relation r
+        LEFT JOIN oa_rank_level l ON r.rank_id = l.id
+        LEFT JOIN mes_system.sys_user u on r.user_id = u.user_id
+        <where>
+            <if test="rankName != null  and rankName != ''">and l.rank_name like concat('%', #{rankName},'%')</if>
+            <if test="userName != null  and userName != ''">and u.nick_name like concat('%', #{userName},'%')</if>
+            <if test="deptId != null  and deptId != ''">and l.dept_id = #{deptId}</if>
+        </where>
+    </select>
+</mapper>

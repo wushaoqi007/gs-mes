@@ -1,0 +1,28 @@
+<assembly>
+    <id>make-assembly</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+        <fileSet>
+            <directory>target/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>target/libs</directory>
+            <outputDirectory>libs</outputDirectory>
+            <fileMode>444</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>target</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>444</fileMode>
+        </fileSet>
+    </fileSets>
+</assembly>

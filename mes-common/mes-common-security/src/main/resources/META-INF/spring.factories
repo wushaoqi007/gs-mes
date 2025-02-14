@@ -1,0 +1,6 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.greenstone.mes.common.security.config.WebMvcConfig,\
+  com.greenstone.mes.common.security.service.TokenService,\
+  com.greenstone.mes.common.security.aspect.PreAuthorizeAspect,\
+  com.greenstone.mes.common.security.aspect.InnerAuthAspect,\
+  com.greenstone.mes.common.security.handler.GlobalExceptionHandler

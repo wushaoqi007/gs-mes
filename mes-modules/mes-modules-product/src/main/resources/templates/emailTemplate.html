@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Email with Table</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<h2></h2>
+<p th:text="'以下请帮忙报价，并在' + ${deadline} + '之前完成报价，逾期视为自动放弃本次机会，谢谢!'"></p>
+<table>
+    <tr>
+        <th>项目代码</th>
+        <th>机种名称</th>
+        <th>零件号/版本</th>
+        <th>零件名称</th>
+        <th>订单数量</th>
+        <th>设计</th>
+        <th>材料</th>
+        <th>备注</th>
+        <th>加工纳期</th>
+    </tr>
+    <tr th:each="part : ${inquiryPriceParts}">
+        <td th:text="${part.projectCode}"></td>
+        <td th:text="${part.hierarchy}"></td>
+        <td th:text="${part.partCodeAndVersion}"></td>
+        <td th:text="${part.partName}"></td>
+        <td th:text="${part.partNumber}"></td>
+        <td th:text="${part.designer}"></td>
+        <td th:text="${part.rawMaterial}"></td>
+        <td th:text="${part.remark}"></td>
+        <td th:text="${part.processDeadline}"></td>
+    </tr>
+</table>
+</body>
+</html>

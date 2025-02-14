@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.material.infrastructure.mapper.StockSearchMapper">
+
+    <resultMap type="StockSearchResp" id="StockSearchResult">
+        <result property="materialCode"    column="material_code"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="materialVersion"    column="material_version"    />
+        <result property="projectCode"    column="project_code"    />
+        <result property="number"    column="number"    />
+        <result property="warehouseName"    column="warehouse_name"    />
+        <result property="warehouseAddress"    column="warehouse_address"    />
+    </resultMap>
+
+    <select id="searchMaterialInStock" parameterType="StockSearchReq" resultMap="StockSearchResult">
+        SELECT
+            m.CODE material_code,
+            m.`name` material_name,
+            m.version material_version,
+            m.project_code,
+            s.number number,
+            m.unit unit
+        FROM
+            material_stock s
+            LEFT JOIN base_warehouse wh ON s.warehouse_id = wh.id
+            LEFT JOIN base_material m ON s.material_id = m.id
+        WHERE
+            s.material_id = m.id
+            AND s.warehouse_id IN (
+            SELECT
+                substring_index( substring_index( id_table.id, ',', seq.help_topic_id + 1 ), ',',- 1 ) id
+            FROM
+                (
+                SELECT
+                    @id AS id,
+                    ( SELECT @id := GROUP_CONCAT( id ) FROM base_warehouse WHERE FIND_IN_SET( parent_id, @id ) ) AS cid
+                FROM
+                    base_warehouse,
+                    ( SELECT @id := #{warehouseId} ) b
+                WHERE
+                    @id IS NOT NULL
+                ) id_table
+            JOIN mysql.help_topic seq ON seq.help_topic_id &lt; ( length( id_table.id ) - length( REPLACE ( id_table.id, ',', '' ) ) + 1 )
+            )
+        <if test="materialName != null  and materialName != ''"> AND m.`name` LIKE concat('%', #{materialName}, '%')</if>
+        <if test="materialCode != null  and materialCode != ''"> AND m.`code` = #{materialCode}</if>
+        <if test="projectCode != null  and projectCode != ''"> AND m.project_code = #{projectCode}</if>
+    </select>
+
+</mapper>

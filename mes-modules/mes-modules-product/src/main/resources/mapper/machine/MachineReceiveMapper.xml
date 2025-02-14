@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.machine.infrastructure.mapper.MachineReceiveMapper">
+
+
+    <select id="selectExportDataList" parameterType="MachineOrderExportQuery" resultType="MachineReceiveExportR">
+        SELECT
+        b.serial_no,
+        b.provider,
+        b.project_code,
+        b.part_code,
+        b.part_name,
+        b.part_version,
+        b.expected_number,
+        b.actual_number,
+        a.receive_time,
+        a.receiver,
+        b.warehouse_code
+        FROM
+        machine_receive_detail b
+        LEFT JOIN machine_receive a ON a.serial_no = b.serial_no
+        <where>
+            a.`status`=1
+            <if test="serialNo != null and serialNo != ''">and a.serial_no = #{serialNo}</if>
+            <if test="provider != null and provider != ''">and a.provider = #{provider}</if>
+            <if test="start != null ">and a.receive_time &gt;= #{start}</if>
+            <if test="end != null ">and a.receive_time &lt;= #{end}</if>
+        </where>
+        order by a.receive_time,b.provider asc
+    </select>
+
+    <select id="listRecord" parameterType="MachineRecordQuery" resultType="MachineReceiveRecord">
+        SELECT
+        a.id,
+        a.serial_no,
+        a.order_serial_no,
+        a.order_detail_id,
+        a.requirement_serial_no,
+        a.project_code,
+        a.material_id,
+        a.part_code,
+        a.part_name,
+        a.part_version,
+        a.expected_number,
+        a.actual_number,
+        a.warehouse_code,
+        a.provider,
+        a.operation,
+        b.`status`,
+        b.receive_time,
+        b.receiver,
+        b.receiver_id,
+        b.receiver_no
+        FROM
+        machine_receive_detail a
+        LEFT JOIN machine_receive b ON a.serial_no = b.serial_no
+        <where>
+            and b.`status`=1
+            <if test="serialNo != null and serialNo != ''">and a.serial_no LIKE concat('%', #{serialNo}, '%')</if>
+            <if test="projectCode != null and projectCode != ''">and a.project_code LIKE concat('%', #{projectCode}, '%')</if>
+            <if test="partCode != null and partCode != ''">and a.part_code LIKE concat('%', #{partCode}, '%')</if>
+            <if test="provider != null and provider != ''">and a.provider LIKE concat('%', #{provider}, '%')</if>
+            <if test="startDate != null ">and b.receive_time &gt;= #{startDate}</if>
+            <if test="endDate != null ">and b.receive_time &lt;= #{endDate}</if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+</mapper>

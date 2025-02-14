@@ -1,0 +1,39 @@
+# Tomcat
+server:
+  port: 9598
+
+# Spring
+spring:
+  jackson:
+    default-property-inclusion: NON_NULL
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  main:
+    allow-circular-references: true
+  application:
+    # 应用名称
+    name: mes-mail
+  profiles:
+    # 环境配置
+    active: @env@
+  cloud:
+    nacos:
+      discovery:
+        # 服务注册地址
+        server-addr: @nacos.ip@:@nacos.port@
+      config:
+        # 配置中心地址
+        server-addr: @nacos.ip@:@nacos.port@
+        # 配置文件格式
+        file-extension: yml
+        # 共享配置
+        shared-configs:
+          - ${spring.application.name}.yml
+          - mes-app.yml
+          - common-mysql.yml
+          - common-redis.yml
+          - common-seata.yml
+          - prometheus.yml
+          - logback.yml
+          - common-mq.yml
+          - common-wxcp.yml

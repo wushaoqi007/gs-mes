@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.oa.mapper.OaRankLevelUserRelationHistoryMapper">
+
+    <resultMap type="OaRankLevelUserRelationHistory" id="OaRankLevelUserRelationHistoryResult">
+        <result property="id" column="id"/>
+        <result property="rankId" column="rank_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="gradeTime" column="grade_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+    </resultMap>
+
+
+    <select id="listExportData" parameterType="OaRankLevelUserRelationListReq"
+            resultType="OaRankLevelExportDataListResp">
+        SELECT a.rank_id rankId, a.user_id userId, a.grade_time gradeTime, b.nick_name userName
+        FROM `oa_rank_level_user_relation` a
+        LEFT JOIN mes_system.sys_user b on a.user_id = b.user_id
+        left join oa_rank_level l on l.id=a.rank_id
+        <where>
+            <if test="deptId != null  and deptId != ''">and l.dept_id = #{deptId}</if>
+        </where>
+        union all
+        SELECT c.rank_id rankId, c.user_id userId, c.grade_time gradeTime, b.nick_name userName
+        FROM `oa_rank_level_user_relation_history` c
+        LEFT JOIN mes_system.sys_user b on c.user_id = b.user_id
+        left join oa_rank_level l on l.id=c.rank_id
+        <where>
+            <if test="deptId != null  and deptId != ''">and l.dept_id = #{deptId}</if>
+        </where>
+    </select>
+</mapper>

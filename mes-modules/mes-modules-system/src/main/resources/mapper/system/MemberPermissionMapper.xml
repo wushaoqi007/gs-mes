@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.system.infrastructure.mapper.MemberPermissionMapper">
+
+    <resultMap type="MemberPermission" id="PermissionResult">
+        <id property="id" column="id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="memberType" column="member_type"/>
+        <result property="functionPermissionId" column="function_permission_id"/>
+        <result property="functionId" column="function_id"/>
+        <result property="functionName" column="functionName"/>
+        <result property="functionType" column="functionType"/>
+        <result property="source" column="source"/>
+        <result property="component" column="component"/>
+        <result property="formComponent" column="form_component"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="usingProcess" column="using_process"/>
+        <result property="templateId" column="template_id"/>
+        <result property="permissionGroupName" column="permission_group_name"/>
+        <result property="permissionGroupTypeName" column="permission_group_type_name"/>
+        <result column="rights" jdbcType="VARCHAR" property="rights"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result column="view_filter" jdbcType="VARCHAR" property="viewFilter"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result column="update_filter" jdbcType="VARCHAR" property="updateFilter"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+    </resultMap>
+
+    <select id="selectMemberPermissionsByMemberId" parameterType="Long" resultMap="PermissionResult">
+        SELECT
+        mp.id,
+        mp.member_id,
+        mp.member_type,
+        mp.function_permission_id,
+        fp.function_id,
+        fp.permission_group_name,
+        fp.permission_group_type_name,
+        fp.rights,
+        fp.view_filter,
+        fp.update_filter
+        FROM
+        sys_member_permission mp
+        LEFT JOIN sys_function_permission fp ON mp.function_permission_id = fp.id
+        <if test="memberId != null">
+            WHERE
+            mp.member_id = #{memberId}
+        </if>
+    </select>
+
+    <select id="selectDetailsByMemberId" parameterType="Long" resultMap="PermissionResult">
+        SELECT
+        mp.id,
+        mp.member_id,
+        mp.member_type,
+        mp.function_permission_id,
+        fp.function_id,
+        f.`name` functionName,
+        f.type functionType,
+        f.source,
+        f.component,
+        f.form_component,
+        f.order_num,
+        f.using_process,
+        f.template_id,
+        fp.permission_group_name,
+        fp.permission_group_type_name,
+        fp.rights,
+        fp.view_filter,
+        fp.update_filter
+        FROM
+        sys_member_permission mp
+        LEFT JOIN sys_function_permission fp ON mp.function_permission_id = fp.id
+        LEFT JOIN sys_function f ON fp.function_id = f.id
+        <if test="memberId != null">
+            WHERE
+            mp.member_id = #{memberId}
+        </if>
+    </select>
+
+    <select id="selectMemberFunctions" parameterType="Long" resultType="MemberFunctionResult">
+        SELECT
+        fp.function_id,
+        f.`name` functionName,
+        f.type functionType,
+        f.source,
+        f.component,
+        f.form_component,
+        f.order_num,
+        f.create_id,
+        f.create_time,
+        f.update_id,
+        f.update_time
+        FROM
+        sys_member_permission mp
+        LEFT JOIN sys_function_permission fp ON mp.function_permission_id = fp.id
+        LEFT JOIN sys_function f ON fp.function_id = f.id
+        <if test="memberId != null">
+            WHERE
+            mp.member_id = #{memberId}
+        </if>
+    </select>
+
+
+</mapper> 

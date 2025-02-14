@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!-- logstash地址 -->
+    <springProperty scope="context" name="logstash_destination" source="logging.logstash"/>
+    <!-- 模块名称 -->
+    <property name="moduleName" value="mes-wxcp"/>
+    <!-- 日志存放路径 -->
+    <property name="log.path" value="/home/mes/log/wxcp"/>
+    <!-- 日志输出格式 -->
+    <property name="log.pattern"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS}|%-5level|%logger{0}|%method|%line|%X{userId}|%X{traceId}: %msg%n"/>
+
+    <!-- 控制台输出 -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 系统日志输出 -->
+    <appender name="runtime" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/runtime.log</file>
+        <!-- 循环政策：基于时间创建日志文件 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 日志文件名格式 -->
+            <fileNamePattern>${log.path}/runtime.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- 日志最大的历史 90天 -->
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="access" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/access.log</file>
+        <!-- 循环政策：基于时间创建日志文件 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 日志文件名格式 -->
+            <fileNamePattern>${log.path}/access.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- 日志最大的历史 90天 -->
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logstash收集登录日志输出到ElasticSearch  -->
+<!--    <appender name="login_logstash_runtime" class="net.logstash.logback.appender.LogstashTcpSocketAppender">-->
+<!--        <destination>${logstash_destination}</destination>-->
+<!--        <keepAliveDuration>5 minutes</keepAliveDuration>-->
+<!--        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LogstashEncoder">-->
+<!--            <customFields>{"indexName": "${moduleName}-runtime"}</customFields>-->
+<!--            <timeZone>UTC</timeZone>-->
+<!--        </encoder>-->
+<!--    </appender>-->
+<!--    <appender name="login_logstash_access" class="net.logstash.logback.appender.LogstashTcpSocketAppender">-->
+<!--        <destination>${logstash_destination}</destination>-->
+<!--        <keepAliveDuration>5 minutes</keepAliveDuration>-->
+<!--        <encoder charset="UTF-8" class="net.logstash.logback.encoder.LogstashEncoder">-->
+<!--            <customFields>{"indexName": "${moduleName}-access"}</customFields>-->
+<!--            <timeZone>UTC</timeZone>-->
+<!--        </encoder>-->
+<!--    </appender>-->
+
+    <!-- 业务模块日志级别控制  -->
+    <logger name="com.greenstone.mes" level="debug"/>
+    <!-- Spring日志级别控制  -->
+    <logger name="org.springframework" level="warn"/>
+
+    <!-- MyBatis日志级别控制 -->
+    <logger name="com.greenstone.mes.asset.infrastructure.mapper" level="debug" additivity="false">
+<!--        <appender-ref ref="login_logstash_access"/>-->
+        <appender-ref ref="access"/>
+        <springProfile name="local,dev">
+            <appender-ref ref="console"/>
+        </springProfile>
+    </logger>
+    <logger name="com.greenstone.mes.oa.infrastructure.mapper" level="debug" additivity="false">
+<!--        <appender-ref ref="login_logstash_access"/>-->
+        <appender-ref ref="access"/>
+        <springProfile name="local,dev">
+            <appender-ref ref="console"/>
+        </springProfile>
+    </logger>
+    <logger name="com.greenstone.mes.purchase.infrastructure.mapper" level="debug" additivity="false">
+<!--        <appender-ref ref="login_logstash_access"/>-->
+        <appender-ref ref="access"/>
+        <springProfile name="local,dev">
+            <appender-ref ref="console"/>
+        </springProfile>
+    </logger>
+
+    <!--系统操作日志-->
+    <root level="info">
+<!--        <appender-ref ref="login_logstash_runtime"/>-->
+        <appender-ref ref="runtime"/>
+        <springProfile name="local,dev,test">
+            <appender-ref ref="console"/>
+        </springProfile>
+    </root>
+
+</configuration>

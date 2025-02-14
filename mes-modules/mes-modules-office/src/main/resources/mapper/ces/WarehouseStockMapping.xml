@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.ces.infrastructure.mapper.WarehouseStockMapper">
+
+    <select id="checkStock" resultType="WarehouseStockDetail">
+        SELECT b.id,
+               b.warehouse_code,
+               b.number,
+               a.item_code,
+               a.item_name,
+               a.max_secure_stock,
+               a.min_secure_stock,
+               a.specification,
+               a.type_code,
+               a.type_name,
+               a.remark
+        FROM `ces_item_specification` a
+                 LEFT JOIN ces_warehouse_stock b ON a.item_code = b.item_code
+        WHERE (a.max_secure_stock > 0 AND b.number &gt;= a.max_secure_stock)
+           OR (a.min_secure_stock > 0 AND b.number &lt;= a.min_secure_stock)
+           OR b.number IS NULL
+    </select>
+
+    <select id="search" parameterType="WarehouseStockFuzzyQuery" resultType="WarehouseStockResult">
+        SELECT
+        a.warehouse_code,
+        c.warehouse_name,
+        a.number,
+        a.item_code,
+        b.item_name,
+        b.type_code,
+        b.type_name,
+        b.specification,
+        b.unit,
+        b.default_price,
+        b.max_secure_stock,
+        b.min_secure_stock
+        FROM
+        `ces_warehouse_stock` a
+        LEFT JOIN ces_item_specification b ON a.item_code = b.item_code
+        LEFT JOIN ces_warehouse c on a.warehouse_code=c.warehouse_code
+        <where>
+            <if test="key != null  and key != ''">AND (
+                        a.`item_code` LIKE concat('%', #{key},'%')
+                     or b.`item_name` LIKE concat('%', #{key},'%')
+                     or a.`warehouse_code` LIKE concat('%', #{key},'%')
+                     or c.`warehouse_name` LIKE concat('%', #{key},'%'))
+            </if>
+            <if test="warehouseCode != null  and warehouseCode != ''">AND a.`warehouse_code` = #{warehouseCode}</if>
+            <if test="filter != null  and filter != '' and filter=='0'.toString()">AND a.number &lt;= b.min_secure_stock</if>
+            <if test="filter != null  and filter != '' and filter=='1'.toString()">AND a.number &gt;= b.max_secure_stock</if>
+            <if test="typeCode != null  and typeCode != ''">AND b.`type_code` = #{typeCode}</if>
+        </where>
+    </select>
+
+</mapper>

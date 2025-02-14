@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.material.infrastructure.mapper.StockMapper">
+
+    <resultMap type="MaterialStock" id="MaterialStockResult">
+        <result property="id" column="id"/>
+        <result property="warehouseId" column="warehouse_id"/>
+        <result property="materialId" column="material_id"/>
+        <result property="number" column="number"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+    </resultMap>
+
+    <sql id="selectMaterialStockVo">
+        select id,
+               warehouse_id,
+               material_id,
+               number,
+               create_time,
+               create_by,
+               update_time,
+               update_by
+        from material_stock
+    </sql>
+
+    <select id="selectMaterialStockList" parameterType="MaterialStock" resultMap="MaterialStockResult">
+        <include refid="selectMaterialStockVo"/>
+        <where>
+            <if test="warehouseId != null ">and warehouse_id = #{warehouseId}</if>
+            <if test="materialId != null ">and material_id = #{materialId}</if>
+            <if test="number != null ">and number = #{number}</if>
+        </where>
+    </select>
+
+    <select id="selectMaterialStockById" parameterType="Long" resultMap="MaterialStockResult">
+        <include refid="selectMaterialStockVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMaterialStock" parameterType="MaterialStock" useGeneratedKeys="true" keyProperty="id">
+        insert into material_stock
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="warehouseId != null">warehouse_id,</if>
+            <if test="materialId != null">material_id,</if>
+            <if test="number != null">number,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="warehouseId != null">#{warehouseId},</if>
+            <if test="materialId != null">#{materialId},</if>
+            <if test="number != null">#{number},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMaterialStock" parameterType="MaterialStock">
+        update material_stock
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMaterialStockById" parameterType="Long">
+        delete
+        from material_stock
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteMaterialStockByIds" parameterType="String">
+        delete from material_stock where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="listStockTotal" parameterType="StockTotalListReq" resultType="StockTotalListResp">
+        SELECT
+        any_value(m.id) material_id,
+        m.CODE material_code,
+        any_value(m.`name`) material_name,
+        m.version material_version,
+        any_value(m.`type`) material_type,
+        sum( s.number ) total_number,
+        any_value(m.unit) unit
+        FROM
+        material_stock s
+        LEFT JOIN base_material m ON s.material_id = m.id
+        <where>
+            <if test="materialName != null  and materialName != ''">AND m.`name` LIKE concat('%', #{materialName},
+                '%')
+            </if>
+            <if test="materialCode != null  and materialCode != ''">AND m.`code` = #{materialCode}</if>
+            <if test="materialType != null  and materialType != ''">AND m.type = #{materialType}</if>
+        </where>
+        GROUP BY
+        m.CODE,
+        m.version
+        order by
+        any_value(m.create_time) desc
+    </select>
+
+    <select id="listStock" parameterType="StockListReq" resultType="StockListResp">
+        SELECT m.id     material_id,
+               wh.id    warehouse_id,
+               wh.CODE  warehouse_code,
+               wh.NAME  warehouse_name,
+               s.number number,
+               m.unit   unit,
+               m.`code` materialCode,
+               m.version materialVersion,
+               m.`name` materialName,
+               s.worksheet_code worksheetCode,
+               s.component_code componentCode,
+               s.receiving_detail_id receivingDetailId
+        FROM material_stock s
+                 LEFT JOIN base_material m ON s.material_id = m.id
+                 LEFT JOIN base_warehouse wh ON s.warehouse_id = wh.id
+        <where>
+            <if test="materialId != null  and materialId != ''">AND s.material_id = #{materialId}</if>
+            <if test="warehouseCode != null  and warehouseCode != ''">AND wh.`code` = #{warehouseCode}</if>
+            <if test="type != null">AND wh.`type` = #{type}</if>
+        </where>
+    </select>
+
+    <select id="listSearchStock" parameterType="StockSearchListReq" resultType="StockListResp">
+        SELECT m.id     material_id,
+               wh.id    warehouse_id,
+               wh.CODE  warehouse_code,
+               wh.NAME  warehouse_name,
+               s.number number,
+               m.unit   unit
+        FROM material_stock s
+                 LEFT JOIN base_material m ON s.material_id = m.id
+                 LEFT JOIN base_warehouse wh ON s.warehouse_id = wh.id
+        <where>
+            <if test="materialId != null  and materialId != ''">AND s.material_id = #{materialId}</if>
+            <if test="stage != null ">AND wh.stage = #{stage}</if>
+        </where>
+    </select>
+
+    <select id="listStockTimeout" parameterType="StockTimeoutSearchReq" resultType="StockTimeOutListResp">
+        SELECT
+        bb.material_id material_id,
+        cc.`code` part_code,
+        cc.version part_version,
+        cc.`name` part_name,
+        bb.warehouse_id warehouse_id,
+        aa.name warehouse_name,
+        bb.number number,
+        ROUND(( UNIX_TIMESTAMP( NOW())- UNIX_TIMESTAMP( bb.create_time ))/ 60 ) duration
+        FROM
+        material_stock bb
+        LEFT JOIN base_warehouse aa ON aa.id = bb.warehouse_id
+        LEFT JOIN base_material cc ON bb.material_id = cc.id
+        <where>
+            cc.`code` IS NOT NULL
+            <if test="partCode != null  and partCode != ''">AND cc.`code` = #{partCode}</if>
+            <if test="duration != null  and duration != ''">AND ROUND(( UNIX_TIMESTAMP( NOW())- UNIX_TIMESTAMP( bb.create_time ))/ 60 ) &gt; #{duration}</if>
+            <if test="warehouseId != null  and warehouseId != ''">AND bb.warehouse_id = #{warehouseId}</if>
+        </where>
+        order by bb.number desc
+    </select>
+
+    <select id="listStockTimeoutContainsChildren" parameterType="StockTimeoutSearchReq" resultType="StockTimeOutListResp">
+        SELECT
+        bb.material_id material_id,
+        cc.`code` part_code,
+        cc.version part_version,
+        cc.`name` part_name,
+        bb.warehouse_id warehouse_id,
+        aa.name warehouse_name,
+        bb.number number,
+        ROUND(( UNIX_TIMESTAMP( NOW())- UNIX_TIMESTAMP( bb.create_time ))/ 60 ) duration
+        FROM
+        material_stock bb
+        LEFT JOIN base_warehouse aa ON aa.id = bb.warehouse_id
+        LEFT JOIN base_material cc ON bb.material_id = cc.id
+        <where>
+            cc.`code` IS NOT NULL and
+            bb.warehouse_id IN (
+            WITH recursive temp AS (
+            ( SELECT b.id, b.NAME FROM base_warehouse b
+            <where>
+                <if test="warehouseId != null  and warehouseId != ''">b.id =  #{warehouseId} </if>
+                <if test="warehouseId == null  or warehouseId == ''">b.parent_id = '0' </if>
+            </where>
+            )UNION ALL
+            ( SELECT bb.id, bb.NAME FROM base_warehouse bb INNER JOIN temp t ON t.id = bb.parent_id )) SELECT
+            id
+            FROM
+            temp
+            )
+            <if test="partCode != null  and partCode != ''">AND cc.`code` = #{partCode}</if>
+            <if test="duration != null  and duration != ''">AND ROUND(( UNIX_TIMESTAMP( NOW())- UNIX_TIMESTAMP( bb.create_time ))/ 60 ) &gt; #{duration}</if>
+        </where>
+        order by bb.number desc
+    </select>
+</mapper>

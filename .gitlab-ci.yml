@@ -1,0 +1,892 @@
+variables:
+  APP_DIR: "/home/mes/app"
+  LINK_DIR: "/opt/mes/app"
+  M_GATEWAY: "gateway"
+  M_AUTH: "auth"
+  M_SYSTEM: "system"
+  M_FILE: "file"
+  M_JOB: "job"
+  M_OFFICE: "office"
+  M_PRODUCT: "product"
+  M_WORKFLOW: "workflow"
+  M_WXCP: "wxcp"
+  M_MAIL: "mail"
+
+stages:
+  - dev-build
+  - dev-deploy
+  - test-build
+  - test-deploy
+  - prod-build
+  - prod-deploy
+
+
+dev-build-gateway:
+  resource_group: mes
+  stage: dev-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mvn clean install -pl mes-gateway -am install -Pdev -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_GATEWAY"
+    - cp mes-gateway/target/*.zip "$APP_DIR"/"$M_GATEWAY"/
+    - cp mes-gateway/target/bin/deploy.sh "$APP_DIR"/"$M_GATEWAY"/
+  when: manual
+
+dev-build-auth:
+  resource_group: mes
+  stage: dev-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mvn clean install -pl mes-auth -am install -Pdev -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_AUTH"
+    - cp mes-auth/target/*.zip "$APP_DIR"/"$M_AUTH"/
+    - cp mes-auth/target/bin/deploy.sh "$APP_DIR"/"$M_AUTH"/
+  when: manual
+
+dev-build-system:
+  resource_group: mes
+  stage: dev-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-system -am install -Pdev -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_SYSTEM"
+    - cp mes-modules/mes-modules-system/target/*.zip "$APP_DIR"/"$M_SYSTEM"/
+    - cp mes-modules/mes-modules-system/target/bin/deploy.sh "$APP_DIR"/"$M_SYSTEM"/
+  when: manual
+
+dev-build-product:
+  resource_group: mes
+  stage: dev-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-product -am install -Pdev -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_PRODUCT"
+    - cp mes-modules/mes-modules-product/target/*.zip "$APP_DIR"/"$M_PRODUCT"/
+    - cp mes-modules/mes-modules-product/target/bin/deploy.sh "$APP_DIR"/"$M_PRODUCT"/
+  when: manual
+
+dev-build-file:
+  resource_group: mes
+  stage: dev-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-file -am install -Pdev -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_FILE"
+    - cp mes-modules/mes-modules-file/target/*.zip "$APP_DIR"/"$M_FILE"/
+    - cp mes-modules/mes-modules-file/target/bin/deploy.sh "$APP_DIR"/"$M_FILE"/
+  when: manual
+
+dev-build-job:
+  resource_group: mes
+  stage: dev-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-job -am install -Pdev -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_JOB"
+    - cp mes-modules/mes-modules-job/target/*.zip "$APP_DIR"/"$M_JOB"/
+    - cp mes-modules/mes-modules-job/target/bin/deploy.sh "$APP_DIR"/"$M_JOB"/
+  when: manual
+
+dev-build-office:
+  resource_group: mes
+  stage: dev-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-office -am install -Pdev -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_OFFICE"
+    - cp mes-modules/mes-modules-office/target/*.zip "$APP_DIR"/"$M_OFFICE"/
+    - cp mes-modules/mes-modules-office/target/bin/deploy.sh "$APP_DIR"/"$M_OFFICE"/
+  when: manual
+
+dev-build-workflow:
+  resource_group: mes
+  stage: dev-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-workflow -am install -Pdev -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_WORKFLOW"
+    - cp mes-modules/mes-modules-workflow/target/*.zip "$APP_DIR"/"$M_WORKFLOW"/
+    - cp mes-modules/mes-modules-workflow/target/bin/deploy.sh "$APP_DIR"/"$M_WORKFLOW"/
+  when: manual
+
+dev-build-wxcp:
+  resource_group: mes
+  stage: dev-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-wxcp -am install -Pdev -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_WXCP"
+    - cp mes-modules/mes-modules-wxcp/target/*.zip "$APP_DIR"/"$M_WXCP"/
+    - cp mes-modules/mes-modules-wxcp/target/bin/deploy.sh "$APP_DIR"/"$M_WXCP"/
+  when: manual
+
+dev-build-mail:
+  resource_group: mes
+  stage: dev-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-mail -am install -Pdev -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_MAIL"
+    - cp mes-modules/mes-modules-mail/target/*.zip "$APP_DIR"/"$M_MAIL"/
+    - cp mes-modules/mes-modules-mail/target/bin/deploy.sh "$APP_DIR"/"$M_MAIL"/
+  when: manual
+
+dev-deploy-gateway:
+  resource_group: mes
+  stage: dev-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_GATEWAY"
+    - cd "$APP_DIR"/"$M_GATEWAY"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+dev-deploy-auth:
+  resource_group: mes
+  stage: dev-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_AUTH"
+    - cd "$APP_DIR"/"$M_AUTH"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+dev-deploy-system:
+  resource_group: mes
+  stage: dev-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_SYSTEM"
+    - cd "$APP_DIR"/"$M_SYSTEM"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+dev-deploy-product:
+  resource_group: mes
+  stage: dev-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_PRODUCT"
+    - cd "$APP_DIR"/"$M_PRODUCT"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+dev-deploy-file:
+  resource_group: mes
+  stage: dev-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_FILE"
+    - cd "$APP_DIR"/"$M_FILE"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+dev-deploy-job:
+  resource_group: mes
+  stage: dev-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_JOB"
+    - cd "$APP_DIR"/"$M_JOB"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+dev-deploy-office:
+  resource_group: mes
+  stage: dev-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_OFFICE"
+    - cd "$APP_DIR"/"$M_OFFICE"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+dev-deploy-workflow:
+  resource_group: mes
+  stage: dev-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_WORKFLOW"
+    - cd "$APP_DIR"/"$M_WORKFLOW"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+dev-deploy-wxcp:
+  resource_group: mes
+  stage: dev-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_WXCP"
+    - cd "$APP_DIR"/"$M_WXCP"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+dev-deploy-mail:
+  resource_group: mes
+  stage: dev-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - dev-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_MAIL"
+    - cd "$APP_DIR"/"$M_MAIL"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+test-build-gateway:
+  resource_group: mes
+  stage: test-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mvn clean install -pl mes-gateway -am install -Ptest -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_GATEWAY"
+    - cp mes-gateway/target/*.zip "$APP_DIR"/"$M_GATEWAY"/
+    - cp mes-gateway/target/bin/deploy.sh "$APP_DIR"/"$M_GATEWAY"/
+  when: manual
+
+test-build-auth:
+  resource_group: mes
+  stage: test-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mvn clean install -pl mes-auth -am install -Ptest -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_AUTH"
+    - cp mes-auth/target/*.zip "$APP_DIR"/"$M_AUTH"/
+    - cp mes-auth/target/bin/deploy.sh "$APP_DIR"/"$M_AUTH"/
+  when: manual
+
+test-build-system:
+  resource_group: mes
+  stage: test-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-system -am install -Ptest -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_SYSTEM"
+    - cp mes-modules/mes-modules-system/target/*.zip "$APP_DIR"/"$M_SYSTEM"/
+    - cp mes-modules/mes-modules-system/target/bin/deploy.sh "$APP_DIR"/"$M_SYSTEM"/
+  when: manual
+
+test-build-product:
+  resource_group: mes
+  stage: test-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-product -am install -Ptest -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_PRODUCT"
+    - cp mes-modules/mes-modules-product/target/*.zip "$APP_DIR"/"$M_PRODUCT"/
+    - cp mes-modules/mes-modules-product/target/bin/deploy.sh "$APP_DIR"/"$M_PRODUCT"/
+  when: manual
+
+test-build-file:
+  resource_group: mes
+  stage: test-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-file -am install -Ptest -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_FILE"
+    - cp mes-modules/mes-modules-file/target/*.zip "$APP_DIR"/"$M_FILE"/
+    - cp mes-modules/mes-modules-file/target/bin/deploy.sh "$APP_DIR"/"$M_FILE"/
+  when: manual
+
+test-build-job:
+  resource_group: mes
+  stage: test-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-job -am install -Ptest -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_JOB"
+    - cp mes-modules/mes-modules-job/target/*.zip "$APP_DIR"/"$M_JOB"/
+    - cp mes-modules/mes-modules-job/target/bin/deploy.sh "$APP_DIR"/"$M_JOB"/
+  when: manual
+
+test-build-office:
+  resource_group: mes
+  stage: test-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-office -am install -Ptest -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_OFFICE"
+    - cp mes-modules/mes-modules-office/target/*.zip "$APP_DIR"/"$M_OFFICE"/
+    - cp mes-modules/mes-modules-office/target/bin/deploy.sh "$APP_DIR"/"$M_OFFICE"/
+  when: manual
+
+test-build-workflow:
+  resource_group: mes
+  stage: test-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-workflow -am install -Ptest -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_WORKFLOW"
+    - cp mes-modules/mes-modules-workflow/target/*.zip "$APP_DIR"/"$M_WORKFLOW"/
+    - cp mes-modules/mes-modules-workflow/target/bin/deploy.sh "$APP_DIR"/"$M_WORKFLOW"/
+  when: manual
+
+test-build-wxcp:
+  resource_group: mes
+  stage: test-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-wxcp -am install -Ptest -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_WXCP"
+    - cp mes-modules/mes-modules-wxcp/target/*.zip "$APP_DIR"/"$M_WXCP"/
+    - cp mes-modules/mes-modules-wxcp/target/bin/deploy.sh "$APP_DIR"/"$M_WXCP"/
+  when: manual
+
+test-build-mail:
+  resource_group: mes
+  stage: test-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-mail -am install -Ptest -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_MAIL"
+    - cp mes-modules/mes-modules-mail/target/*.zip "$APP_DIR"/"$M_MAIL"/
+    - cp mes-modules/mes-modules-mail/target/bin/deploy.sh "$APP_DIR"/"$M_MAIL"/
+  when: manual
+
+test-deploy-gateway:
+  resource_group: mes
+  stage: test-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_GATEWAY"
+    - cd "$APP_DIR"/"$M_GATEWAY"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+test-deploy-auth:
+  resource_group: mes
+  stage: test-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_AUTH"
+    - cd "$APP_DIR"/"$M_AUTH"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+test-deploy-system:
+  resource_group: mes
+  stage: test-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_SYSTEM"
+    - cd "$APP_DIR"/"$M_SYSTEM"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+test-deploy-product:
+  resource_group: mes
+  stage: test-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_PRODUCT"
+    - cd "$APP_DIR"/"$M_PRODUCT"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+test-deploy-file:
+  resource_group: mes
+  stage: test-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_FILE"
+    - cd "$APP_DIR"/"$M_FILE"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+test-deploy-job:
+  resource_group: mes
+  stage: test-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_JOB"
+    - cd "$APP_DIR"/"$M_JOB"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+test-deploy-office:
+  resource_group: mes
+  stage: test-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_OFFICE"
+    - cd "$APP_DIR"/"$M_OFFICE"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+test-deploy-workflow:
+  resource_group: mes
+  stage: test-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_WORKFLOW"
+    - cd "$APP_DIR"/"$M_WORKFLOW"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+test-deploy-wxcp:
+  resource_group: mes
+  stage: test-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_WXCP"
+    - cd "$APP_DIR"/"$M_WXCP"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+test-deploy-mail:
+  resource_group: mes
+  stage: test-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - test-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_MAIL"
+    - cd "$APP_DIR"/"$M_MAIL"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+prod-build-gateway:
+  resource_group: mes
+  stage: prod-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mvn clean install -pl mes-gateway -am install -Pprod -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_GATEWAY"
+    - cp mes-gateway/target/*.zip "$APP_DIR"/"$M_GATEWAY"/
+    - cp mes-gateway/target/bin/deploy.sh "$APP_DIR"/"$M_GATEWAY"/
+  when: manual
+
+prod-build-auth:
+  resource_group: mes
+  stage: prod-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mvn clean install -pl mes-auth -am install -Pprod -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_AUTH"
+    - cp mes-auth/target/*.zip "$APP_DIR"/"$M_AUTH"/
+    - cp mes-auth/target/bin/deploy.sh "$APP_DIR"/"$M_AUTH"/
+  when: manual
+
+prod-build-system:
+  resource_group: mes
+  stage: prod-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-system -am install -Pprod -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_SYSTEM"
+    - cp mes-modules/mes-modules-system/target/*.zip "$APP_DIR"/"$M_SYSTEM"/
+    - cp mes-modules/mes-modules-system/target/bin/deploy.sh "$APP_DIR"/"$M_SYSTEM"/
+  when: manual
+
+prod-build-product:
+  resource_group: mes
+  stage: prod-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-product -am install -Pprod -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_PRODUCT"
+    - cp mes-modules/mes-modules-product/target/*.zip "$APP_DIR"/"$M_PRODUCT"/
+    - cp mes-modules/mes-modules-product/target/bin/deploy.sh "$APP_DIR"/"$M_PRODUCT"/
+  when: manual
+
+prod-build-file:
+  resource_group: mes
+  stage: prod-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-file -am install -Pprod -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_FILE"
+    - cp mes-modules/mes-modules-file/target/*.zip "$APP_DIR"/"$M_FILE"/
+    - cp mes-modules/mes-modules-file/target/bin/deploy.sh "$APP_DIR"/"$M_FILE"/
+  when: manual
+
+prod-build-job:
+  resource_group: mes
+  stage: prod-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-job -am install -Pprod -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_JOB"
+    - cp mes-modules/mes-modules-job/target/*.zip "$APP_DIR"/"$M_JOB"/
+    - cp mes-modules/mes-modules-job/target/bin/deploy.sh "$APP_DIR"/"$M_JOB"/
+  when: manual
+
+prod-build-office:
+  resource_group: mes
+  stage: prod-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-office -am install -Pprod -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_OFFICE"
+    - cp mes-modules/mes-modules-office/target/*.zip "$APP_DIR"/"$M_OFFICE"/
+    - cp mes-modules/mes-modules-office/target/bin/deploy.sh "$APP_DIR"/"$M_OFFICE"/
+  when: manual
+
+prod-build-workflow:
+  resource_group: mes
+  stage: prod-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-workflow -am install -Pprod -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_WORKFLOW"
+    - cp mes-modules/mes-modules-workflow/target/*.zip "$APP_DIR"/"$M_WORKFLOW"/
+    - cp mes-modules/mes-modules-workflow/target/bin/deploy.sh "$APP_DIR"/"$M_WORKFLOW"/
+  when: manual
+
+prod-build-wxcp:
+  resource_group: mes
+  stage: prod-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-wxcp -am install -Pprod -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_WXCP"
+    - cp mes-modules/mes-modules-wxcp/target/*.zip "$APP_DIR"/"$M_WXCP"/
+    - cp mes-modules/mes-modules-wxcp/target/bin/deploy.sh "$APP_DIR"/"$M_WXCP"/
+  when: manual
+
+prod-build-mail:
+  resource_group: mes
+  stage: prod-build
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mvn clean install -pl mes-modules/mes-modules-mail -am install -Pprod -Dmaven.test.skip=true
+    - mkdir -p "$APP_DIR"/"$M_MAIL"
+    - cp mes-modules/mes-modules-mail/target/*.zip "$APP_DIR"/"$M_MAIL"/
+    - cp mes-modules/mes-modules-mail/target/bin/deploy.sh "$APP_DIR"/"$M_MAIL"/
+  when: manual
+
+prod-deploy-gateway:
+  resource_group: mes
+  stage: prod-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_GATEWAY"
+    - cd "$APP_DIR"/"$M_GATEWAY"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+prod-deploy-auth:
+  resource_group: mes
+  stage: prod-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_AUTH"
+    - cd "$APP_DIR"/"$M_AUTH"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+prod-deploy-system:
+  resource_group: mes
+  stage: prod-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_SYSTEM"
+    - cd "$APP_DIR"/"$M_SYSTEM"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+prod-deploy-product:
+  resource_group: mes
+  stage: prod-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_PRODUCT"
+    - cd "$APP_DIR"/"$M_PRODUCT"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+prod-deploy-file:
+  resource_group: mes
+  stage: prod-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_FILE"
+    - cd "$APP_DIR"/"$M_FILE"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+prod-deploy-job:
+  resource_group: mes
+  stage: prod-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_JOB"
+    - cd "$APP_DIR"/"$M_JOB"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+prod-deploy-office:
+  resource_group: mes
+  stage: prod-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_OFFICE"
+    - cd "$APP_DIR"/"$M_OFFICE"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+prod-deploy-workflow:
+  resource_group: mes
+  stage: prod-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_WORKFLOW"
+    - cd "$APP_DIR"/"$M_WORKFLOW"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+prod-deploy-wxcp:
+  resource_group: mes
+  stage: prod-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_WXCP"
+    - cd "$APP_DIR"/"$M_WXCP"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual
+
+prod-deploy-mail:
+  resource_group: mes
+  stage: prod-deploy
+  only: 
+    changes: [.gitlab-ci.yml]
+  tags:
+    - prod-runner
+  script:
+    - mkdir -p "$APP_DIR"/"$M_MAIL"
+    - cd "$APP_DIR"/"$M_MAIL"
+    - chmod 755 deploy.sh
+    - ./deploy.sh
+    - rm -f deploy.sh
+  when: manual

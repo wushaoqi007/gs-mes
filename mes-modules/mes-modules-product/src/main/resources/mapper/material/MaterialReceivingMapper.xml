@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.material.infrastructure.mapper.MaterialReceivingMapper">
+
+    <resultMap type="MaterialReceiving" id="MaterialReceivingResult">
+        <result property="id" column="id"/>
+        <result property="projectCode" column="project_code"/>
+        <result property="code" column="code"/>
+        <result property="status" column="status"/>
+        <result property="receiveBy" column="receive_by"/>
+        <result property="readyTime" column="ready_time"/>
+        <result property="deadline" column="deadline"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+    </resultMap>
+
+    <sql id="selectMaterialReceivingVo">
+        select id,
+               project_code,
+               code,
+               status,
+               receive_by,
+               ready_time,
+               deadline,
+               create_time,
+               create_by,
+               update_time,
+               update_by
+        from material_receiving
+    </sql>
+
+
+    <select id="selectMaterialReceivingList" parameterType="MaterialReceivingListReq"
+            resultType="MaterialReceivingListResp">
+        <include refid="selectMaterialReceivingVo"/>
+        <where>
+            and deleted != 1
+            <if test="projectCode != null and projectCode != ''">and project_code = #{projectCode}</if>
+            <if test="status != null ">and status = #{status}</if>
+            <if test="createBy != null and createBy != ''">and create_by = #{createBy}</if>
+            <if test="receiveBy != null and receiveBy != ''">and receive_by = #{receiveBy}</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectMaterialReceivingDetailById" parameterType="Long" resultType="MaterialReceivingDetailResp">
+        SELECT r.id               receivingId,
+               b.id               receivingDetailId,
+               b.material_id      materialId,
+               b.material_name    materialName,
+               b.material_code    materialCode,
+               b.material_version materialVersion,
+               b.total_num        totalNum,
+               b.received_num     receivedNum
+        from material_receiving r
+                 left join material_receiving_detail b on r.id = b.receiving_id
+        where r.id = #{id}
+          and deleted != 1
+    </select>
+
+
+</mapper>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.material.infrastructure.mapper.MaterialMachinedPartMapper">
+
+    <resultMap type="MaterialMachinedPart" id="MaterialMachinedPartResult">
+        <result property="id"    column="id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="materialCode"    column="material_code"    />
+        <result property="materialName"    column="material_name"    />
+        <result property="materialVersion"    column="material_version"    />
+        <result property="number"    column="number"    />
+        <result property="provider"    column="provider"    />
+        <result property="designer"    column="designer"    />
+        <result property="componentId"    column="component_id"    />
+        <result property="componentCode"    column="component_code"    />
+        <result property="componentName"    column="component_name"    />
+        <result property="componentVersion"    column="component_version"    />
+        <result property="purchaseTime"    column="purchase_time"    />
+        <result property="projectCode"    column="project_code"    />
+        <result property="rawMaterial"    column="raw_material"    />
+        <result property="deliveryTime"    column="delivery_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+    </resultMap>
+
+    <sql id="selectMaterialMachinedPartVo">
+        select id, material_id, material_code, material_name, material_version, number, provider, designer, component_id, component_code, component_name, component_version, purchase_time, project_code, raw_material, delivery_time, create_time, create_by, update_time, update_by from material_machined_part
+    </sql>
+
+    <select id="selectMaterialMachinedPartList" parameterType="MachinedPartsListReq" resultMap="MaterialMachinedPartResult">
+        <include refid="selectMaterialMachinedPartVo"/>
+        <where>
+            <if test="materialCode != null  and materialCode != ''"> and material_code = #{materialCode}</if>
+            <if test="materialName != null  and materialName != ''"> and material_name like concat('%', #{materialName}, '%')</if>
+            <if test="materialVersion != null  and materialVersion != ''"> and material_Version = #{materialVersion}</if>
+            <if test="provider != null  and provider != ''"> and provider = #{provider}</if>
+            <if test="designer != null  and designer != ''"> and designer = #{designer}</if>
+            <if test="componentCode != null  and componentCode != ''"> and component_code = #{componentCode}</if>
+            <if test="componentName != null  and componentName != ''"> and component_name like concat('%', #{componentName}, '%')</if>
+            <if test="componentVersion != null  and componentVersion != ''"> and component_version = #{componentVersion}</if>
+            <if test="projectCode != null  and projectCode != ''"> and project_code = #{projectCode}</if>
+            <if test="deliveryTimeFrom != null and deliveryTimeTo != null"> and delivery_time &gt;= #{deliveryTimeFrom} and delivery_time &lt;= #{deliveryTimeTo}</if>
+        </where>
+    </select>
+
+    <select id="selectMaterialMachinedPartById" parameterType="Long" resultMap="MaterialMachinedPartResult">
+        <include refid="selectMaterialMachinedPartVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMaterialMachinedPart" parameterType="MaterialMachinedPart" useGeneratedKeys="true" keyProperty="id">
+        insert into material_machined_part
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="materialId != null">material_id,</if>
+            <if test="materialCode != null">material_code,</if>
+            <if test="materialName != null">material_name,</if>
+            <if test="materialVersion != null">material_version,</if>
+            <if test="number != null">number,</if>
+            <if test="provider != null">provider,</if>
+            <if test="designer != null">designer,</if>
+            <if test="componentId != null">component_id,</if>
+            <if test="componentCode != null">component_code,</if>
+            <if test="componentName != null">component_name,</if>
+            <if test="componentVersion != null">component_version,</if>
+            <if test="purchaseTime != null">purchase_time,</if>
+            <if test="projectCode != null">project_code,</if>
+            <if test="rawMaterial != null">raw_material,</if>
+            <if test="deliveryTime != null">delivery_time,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="materialId != null">#{materialId},</if>
+            <if test="materialCode != null">#{materialCode},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="materialVersion != null">#{materialVersion},</if>
+            <if test="number != null">#{number},</if>
+            <if test="provider != null">#{provider},</if>
+            <if test="designer != null">#{designer},</if>
+            <if test="componentId != null">#{componentId},</if>
+            <if test="componentCode != null">#{componentCode},</if>
+            <if test="componentName != null">#{componentName},</if>
+            <if test="componentVersion != null">#{componentVersion},</if>
+            <if test="purchaseTime != null">#{purchaseTime},</if>
+            <if test="projectCode != null">#{projectCode},</if>
+            <if test="rawMaterial != null">#{rawMaterial},</if>
+            <if test="deliveryTime != null">#{deliveryTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMaterialMachinedPart" parameterType="MaterialMachinedPart">
+        update material_machined_part
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="materialCode != null">material_code = #{materialCode},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="materialVersion != null">material_version = #{materialVersion},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="provider != null">provider = #{provider},</if>
+            <if test="designer != null">designer = #{designer},</if>
+            <if test="componentId != null">component_id = #{componentId},</if>
+            <if test="componentCode != null">component_code = #{componentCode},</if>
+            <if test="componentName != null">component_name = #{componentName},</if>
+            <if test="componentVersion != null">component_version = #{componentVersion},</if>
+            <if test="purchaseTime != null">purchase_time = #{purchaseTime},</if>
+            <if test="projectCode != null">project_code = #{projectCode},</if>
+            <if test="rawMaterial != null">raw_material = #{rawMaterial},</if>
+            <if test="deliveryTime != null">delivery_time = #{deliveryTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMaterialMachinedPartById" parameterType="Long">
+        delete from material_machined_part where id = #{id}
+    </delete>
+
+    <delete id="deleteMaterialMachinedPartByIds" parameterType="String">
+        delete from material_machined_part where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

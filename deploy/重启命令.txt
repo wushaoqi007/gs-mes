@@ -1,0 +1,10 @@
+/opt/mes/app/auth/bin/appctl.sh restart
+/opt/mes/app/file/bin/appctl.sh restart
+/opt/mes/app/gateway/bin/appctl.sh restart
+/opt/mes/app/job/bin/appctl.sh restart
+/opt/mes/app/mail/bin/appctl.sh restart
+/opt/mes/app/office/bin/appctl.sh restart
+/opt/mes/app/product/bin/appctl.sh restart
+/opt/mes/app/system/bin/appctl.sh restart
+/opt/mes/app/workflow/bin/appctl.sh restart
+/opt/mes/app/wxcp/bin/appctl.sh restart

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.greenstone.mes</groupId>
+        <artifactId>gs-mes</artifactId>
+        <version>1.11.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>mes-modules-system</module>
+        <module>mes-modules-job</module>
+        <module>mes-modules-file</module>
+        <module>mes-modules-product</module>
+        <module>mes-modules-office</module>
+        <module>mes-modules-wxcp</module>
+        <module>mes-modules-workflow</module>
+        <module>mes-modules-mail</module>
+    </modules>
+
+    <artifactId>mes-modules</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        mes-modules业务模块
+    </description>
+
+    <dependencies>
+        <!-- Mes Common Bean -->
+        <dependency>
+            <groupId>com.greenstone.mes</groupId>
+            <artifactId>mes-common-bean</artifactId>
+        </dependency>
+        <!-- logstash  -->
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

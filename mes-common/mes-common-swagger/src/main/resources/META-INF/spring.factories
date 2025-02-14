@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.greenstone.mes.common.swagger.config.SwaggerAutoConfiguration,\
+  com.greenstone.mes.common.swagger.config.SwaggerWebConfiguration,\
+  com.greenstone.mes.common.swagger.config.SwaggerBeanPostProcessor

@@ -1,0 +1,11 @@
+CREATE DATABASE `mes-seata` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE `mes_config` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE `mes_config_local` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE `mes_file` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE `mes_job` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE `mes_mail` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE `mes_office` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE `mes_product` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE `mes_system` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE `mes_workflow` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE `mes_wxcp` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;

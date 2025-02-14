@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.asset.infrastructure.mapper.AssetRepairMapper">
+
+    <select id="selectByFuzzyQuery" parameterType="AssetFuzzyQuery" resultType="AssetRepair">
+        SELECT
+        a.*
+        FROM
+        asset_repair a
+        <where>
+            <if test="keyWord != null  and keyWord != ''">
+                and (a.repair_by LIKE concat('%', #{keyWord},'%')
+                OR a.serial_no IN (
+                SELECT
+                b.serial_no
+                FROM
+                asset_repair_detail b
+                LEFT JOIN asset c ON b.bar_code = c.bar_code
+                WHERE
+                c.bar_code LIKE concat('%', #{keyWord},'%')
+                OR c.`name` LIKE concat('%', #{keyWord},'%')
+                ))
+            </if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+</mapper>

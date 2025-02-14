@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.greenstone.mes.machine.infrastructure.mapper.MachineStockMapper">
+
+    <select id="listStock" parameterType="MachinePartStockQuery" resultType="MachinePartStockR">
+        SELECT
+        IFNULL(s.number,0) stockNumber,
+        m.id material_id,
+        s.project_code,
+        m.`code` partCode,
+        m.version partVersion,
+        m.`name` partName,
+        wh.id warehouse_id,
+        wh.`code` warehouse_code,
+        wh.`name` warehouse_name,
+        wh.stage,
+        m.unit,
+        m.raw_material,
+        m.surface_treatment,
+        m.weight,
+        m.designer
+        FROM
+        base_material m
+        LEFT JOIN machine_stock s ON s.material_id = m.id
+        LEFT JOIN base_warehouse wh ON s.warehouse_id = wh.id
+        <where>
+            <if test="projectCode != null  and projectCode != ''">AND s.project_code = #{projectCode}</if>
+            <if test="partCode != null  and partCode != ''">AND m.`code` = #{partCode}</if>
+            <if test="partName != null  and partName != ''">AND m.`name` LIKE concat('%', #{partName}, '%')</if>
+            <if test="warehouseName != null  and warehouseName != ''">AND wh.`name` = LIKE concat('%', #{warehouseName}, '%')</if>
+            <if test="warehouseCode != null  and warehouseCode != ''">AND wh.`code` = #{warehouseCode}</if>
+            <if test="materialId != null ">AND s.material_id = #{materialId}</if>
+            <if test="warehouseId != null ">AND s.warehouse_id = #{warehouseId}</if>
+        </where>
+    </select>
+
+    <select id="listRealStock" parameterType="MachineRealStockQuery" resultType="MachinePartStockR">
+        SELECT
+        IFNULL(s.number,0) stockNumber,
+        m.id material_id,
+        s.project_code,
+        m.`code` partCode,
+        m.version partVersion,
+        m.`name` partName,
+        wh.id warehouse_id,
+        wh.`code` warehouse_code,
+        wh.`name` warehouse_name,
+        wh.stage,
+        m.unit,
+        m.raw_material,
+        m.surface_treatment,
+        m.weight,
+        m.designer,
+        s.create_time,
+        TIMESTAMPDIFF(DAY,s.create_time,NOW()) stayDays,
+        TIMESTAMPDIFF(HOUR,s.create_time,NOW()) stayHours
+        FROM
+        machine_stock s
+        LEFT JOIN base_material m  ON s.material_id = m.id
+        LEFT JOIN base_warehouse wh ON s.warehouse_id = wh.id
+        <where>
+            <if test="projectCode != null  and projectCode != ''">AND s.project_code LIKE concat('%', #{projectCode}, '%')</if>
+            <if test="partCode != null  and partCode != ''">AND m.`code` LIKE concat('%', #{partCode}, '%')</if>
+            <if test="partName != null  and partName != ''">AND m.`name` LIKE concat('%', #{partName}, '%')</if>
+            <if test="warehouseCode != null  and warehouseCode != ''">AND wh.`code` LIKE concat('%', #{warehouseCode}, '%')</if>
+            <if test="stage != null ">AND wh.stage = #{stage}</if>
+            <if test="startDate != null ">and s.create_time &gt;= #{startDate}</if>
+            <if test="endDate != null ">and s.create_time &lt;= #{endDate}</if>
+            <if test="stayDays != null ">AND TIMESTAMPDIFF(DAY,s.create_time,NOW()) &gt;= #{stayDays}</if>
+        </where>
+        ORDER BY
+        s.create_time DESC
+    </select>
+
+    <select id="listStageStock" resultType="com.greenstone.mes.machine.interfaces.resp.MachineStageStockResp">
+        SELECT
+        s.id stock_id,
+        s.material_id material_id,
+        s.warehouse_id warehouse_id,
+        s.number number,
+        w.code warehouse_code,
+        w.stage stage
+        FROM
+        machine_stock s
+        LEFT JOIN base_warehouse w ON s.warehouse_id = w.id
+        WHERE
+        s.material_id = #{materialId}
+        AND s.project_code = #{projectCode}
+        AND w.stage IN
+        <foreach collection="stages" item="stage" index="index" open="(" close=")" separator=",">
+            #{stage.id}
+        </foreach>
+        ORDER BY
+        s.create_time DESC
+    </select>
+
+</mapper>
